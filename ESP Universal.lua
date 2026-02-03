@@ -1,28 +1,28 @@
---[[ Universal Hub LMG2L - Silent Aim + ESP ]]--
+--[[ Universal Hub LMG2L - Completo e funcional (ESP Really Blue) ]]--
 
 local LMG2L = {}
 
--- Services
+--// Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
-local UserInputService = game:GetService("UserInputService")
 local Camera = workspace.CurrentCamera
 
--- ScreenGui
+--// ScreenGui
 LMG2L["ScreenGui"] = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 LMG2L["ScreenGui"].Name = "UniversalHub"
 LMG2L["ScreenGui"].ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- MainFrame
-local main = Instance.new("Frame", LMG2L["ScreenGui"])
+--// MainFrame
+LMG2L["MainFrame"] = Instance.new("Frame", LMG2L["ScreenGui"])
+local main = LMG2L["MainFrame"]
 main.Size = UDim2.new(0.32,0,0.56,0)
 main.Position = UDim2.new(0.34,0,0.15,0)
 main.BackgroundColor3 = Color3.fromRGB(0,0,0)
 main.BorderSizePixel = 0
 Instance.new("UICorner", main)
 
--- Header
+--// Header
 local header = Instance.new("Frame", main)
 header.Size = UDim2.new(1,0,0.15,0)
 header.BackgroundColor3 = Color3.fromRGB(0,0,0)
@@ -60,7 +60,145 @@ toggleBtn.Font = Enum.Font.GothamBold
 toggleBtn.TextSize = 35
 Instance.new("UICorner", toggleBtn)
 
--- Open button when minimized
+-- Button container (left)
+local leftFrame = Instance.new("Frame", main)
+leftFrame.Size = UDim2.new(0.32,0,0.79,0)
+leftFrame.Position = UDim2.new(0.02,0,0.165,0)
+leftFrame.BackgroundColor3 = Color3.fromRGB(84,84,84)
+leftFrame.BorderSizePixel = 0
+Instance.new("UICorner", leftFrame)
+
+-- Tabs buttons
+local hitboxBtn = Instance.new("TextButton", leftFrame)
+hitboxBtn.Size = UDim2.new(0.87,0,0.16,0)
+hitboxBtn.Position = UDim2.new(0.07,0,0.03,0)
+hitboxBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+hitboxBtn.BackgroundTransparency = 0.8
+hitboxBtn.TextColor3 = Color3.fromRGB(255,255,255)
+hitboxBtn.Text = "Hitbox"
+hitboxBtn.Font = Enum.Font.DenkOne
+hitboxBtn.TextSize = 30
+Instance.new("UICorner", hitboxBtn)
+
+local espBtn = Instance.new("TextButton", leftFrame)
+espBtn.Size = UDim2.new(0.87,0,0.16,0)
+espBtn.Position = UDim2.new(0.07,0,0.22,0)
+espBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+espBtn.BackgroundTransparency = 0.8
+espBtn.TextColor3 = Color3.fromRGB(255,255,255)
+espBtn.Text = "ESP"
+espBtn.Font = Enum.Font.DenkOne
+espBtn.TextSize = 30
+Instance.new("UICorner", espBtn)
+
+-- Tabs content frame (right)
+local rightFrame = Instance.new("Frame", main)
+rightFrame.Size = UDim2.new(0.61,0,0.79,0)
+rightFrame.Position = UDim2.new(0.37,0,0.165,0)
+rightFrame.BackgroundColor3 = Color3.fromRGB(84,84,84)
+rightFrame.BorderSizePixel = 0
+Instance.new("UICorner", rightFrame)
+
+-- ================== Aba Hitbox ==================
+local hitboxContent = Instance.new("Frame", rightFrame)
+hitboxContent.Size = UDim2.new(1,0,1,0)
+hitboxContent.BackgroundTransparency = 1
+hitboxContent.Visible = true
+
+-- Colocando o script ofuscado dentro da aba Hitbox
+do
+    local v0=game:GetService("Players")
+    local v1=game:GetService("RunService")
+    local v2=v0.LocalPlayer
+    local v3=game:GetService("TweenService")
+    local v4=Instance.new("Frame", hitboxContent)
+    local v5=Instance.new("UICorner",v4)
+    local v7=Instance.new("TextBox",v4)
+    local v8=Instance.new("UICorner",v7)
+    local v9=Instance.new("TextButton",v4)
+    local v10=Instance.new("UICorner",v9)
+    local v11=Instance.new("TextButton",v4)
+    local v12=Instance.new("UICorner",v11)
+    local v13=false
+    v4.Size=UDim2.new(0,300,0,150)
+    v4.Position=UDim2.new(0.5,-150,0.5,-75)
+    v4.BackgroundColor3=Color3.fromRGB(10,50,10)
+    v4.BorderSizePixel=0
+    v4.Active=true
+    v4.Draggable=true
+    v4.ClipsDescendants=true
+    v4.BackgroundTransparency=0.2
+    v4.Visible=true
+    v11.Size=UDim2.new(50,0,20,0)
+    v11.Position=UDim2.new(0,0,0,0)
+    v11.Text="▼"
+    v11.BackgroundColor3=Color3.fromRGB(100,200,50)
+    v11.TextColor3=Color3.fromRGB(255,255,255)
+    v7.Size=UDim2.new(100,0,20,0)
+    v7.Position=UDim2.new(0,10,0,30)
+    v7.Text="10"
+    v7.BackgroundColor3=Color3.fromRGB(50,200,50)
+    v7.TextColor3=Color3.fromRGB(255,255,255)
+    _G.HeadSize=tonumber(v7.Text) or 10
+    _G.Disabled=true
+    local v52={}
+    local function v53() 
+        v52={}
+        for _,v67 in ipairs(v0:GetPlayers()) do
+            if v67~=v2 and v67.Character and v67.Character:FindFirstChild("HumanoidRootPart") then
+                table.insert(v52,v67)
+            end
+        end
+    end
+    v7.FocusLost:Connect(function()
+        local v56=tonumber(v7.Text)
+        if v56 then _G.HeadSize=v56 else v7.Text=tostring(_G.HeadSize) end
+    end)
+    v9.MouseButton1Click:Connect(function()
+        _G.Disabled = not _G.Disabled
+        v9.Text = (_G.Disabled and "Enable Hitbox") or "Disable Hitbox"
+    end)
+    v11.MouseButton1Click:Connect(function()
+        v13 = not v13
+        v11.Text = (v13 and "▲") or "▼"
+    end)
+    v1.RenderStepped:Connect(function()
+        if not _G.Disabled then
+            for _,v65 in ipairs(v52) do
+                if v65.Character and v65.Character:FindFirstChild("HumanoidRootPart") then
+                    local v70=v65.Character.HumanoidRootPart
+                    v70.Size=Vector3.new(_G.HeadSize,_G.HeadSize,_G.HeadSize)
+                    v70.Transparency=0
+                    v70.BrickColor=BrickColor.new("Really blue")
+                    v70.Material=Enum.Material.Neon
+                    v70.CanCollide=false
+                end
+            end
+        end
+    end)
+    while true do
+        v53()
+        wait(1)
+    end
+end
+
+-- ================== Aba ESP ==================
+local espContent = Instance.new("Frame", rightFrame)
+espContent.Size = UDim2.new(1,0,1,0)
+espContent.BackgroundTransparency = 1
+espContent.Visible = false
+
+-- Button logic to switch tabs
+hitboxBtn.MouseButton1Click:Connect(function()
+    hitboxContent.Visible = true
+    espContent.Visible = false
+end)
+espBtn.MouseButton1Click:Connect(function()
+    hitboxContent.Visible = false
+    espContent.Visible = true
+end)
+
+-- ================= Minimize/Restore =================
 local openBtn = Instance.new("TextButton", LMG2L["ScreenGui"])
 openBtn.Size = UDim2.new(0,50,0,50)
 openBtn.Position = UDim2.new(0,10,0,10)
@@ -80,165 +218,124 @@ openBtn.MouseButton1Click:Connect(function()
     openBtn.Visible = false
 end)
 
--- Left panel with tabs
-local leftFrame = Instance.new("Frame", main)
-leftFrame.Size = UDim2.new(0.32,0,0.79,0)
-leftFrame.Position = UDim2.new(0.02,0,0.165,0)
-leftFrame.BackgroundColor3 = Color3.fromRGB(84,84,84)
-leftFrame.BorderSizePixel = 0
-Instance.new("UICorner", leftFrame)
+-- ================= ESP Settings inside the ESP tab =================
+local ESPSettings = {Box=false,Outline=false,Name=false,Distance=false,Teammates=false}
+local ESPElements = {}
 
--- Tab buttons
-local silentBtn = Instance.new("TextButton", leftFrame)
-silentBtn.Size = UDim2.new(0.87,0,0.16,0)
-silentBtn.Position = UDim2.new(0.07,0,0.03,0)
-silentBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-silentBtn.BackgroundTransparency = 0.8
-silentBtn.TextColor3 = Color3.fromRGB(255,255,255)
-silentBtn.Text = "Silent Aim"
-silentBtn.Font = Enum.Font.DenkOne
-silentBtn.TextSize = 30
-Instance.new("UICorner", silentBtn)
-
-local espBtn = Instance.new("TextButton", leftFrame)
-espBtn.Size = UDim2.new(0.87,0,0.16,0)
-espBtn.Position = UDim2.new(0.07,0,0.22,0)
-espBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-espBtn.BackgroundTransparency = 0.8
-espBtn.TextColor3 = Color3.fromRGB(255,255,255)
-espBtn.Text = "ESP"
-espBtn.Font = Enum.Font.DenkOne
-espBtn.TextSize = 30
-Instance.new("UICorner", espBtn)
-
--- Right frame to hold tab content
-local rightFrame = Instance.new("Frame", main)
-rightFrame.Size = UDim2.new(0.61,0,0.79,0)
-rightFrame.Position = UDim2.new(0.37,0,0.165,0)
-rightFrame.BackgroundColor3 = Color3.fromRGB(84,84,84)
-rightFrame.BorderSizePixel = 0
-Instance.new("UICorner", rightFrame)
-
--- Silent Aim Content
-local silentContent = Instance.new("Frame", rightFrame)
-silentContent.Size = UDim2.new(1,0,1,0)
-silentContent.BackgroundTransparency = 1
-silentContent.Visible = true
-
--- ESP Content
-local espContent = Instance.new("Frame", rightFrame)
-espContent.Size = UDim2.new(1,0,1,0)
-espContent.BackgroundTransparency = 1
-espContent.Visible = false
-
--- Tab functionality
-silentBtn.MouseButton1Click:Connect(function()
-    silentContent.Visible = true
-    espContent.Visible = false
-end)
-espBtn.MouseButton1Click:Connect(function()
-    silentContent.Visible = false
-    espContent.Visible = true
-end)
-
--- ==================== Silent Aim Elements ====================
-
-local FOV = 100 -- default radius
-local active = false
-local targetCircle = Instance.new("Frame", LMG2L["ScreenGui"])
-targetCircle.Size = UDim2.new(0,FOV,0,FOV)
-targetCircle.AnchorPoint = Vector2.new(0.5,0.5)
-targetCircle.BackgroundColor3 = Color3.fromRGB(0,170,255)
-targetCircle.BackgroundTransparency = 0.7
-targetCircle.BorderSizePixel = 2
-targetCircle.BorderColor3 = Color3.fromRGB(255,255,255)
-targetCircle.Visible = false
-targetCircle.ZIndex = 999
-Instance.new("UICorner", targetCircle)
-
--- Toggle Button
-local toggleSA = Instance.new("TextButton", silentContent)
-toggleSA.Size = UDim2.new(0.6,0,0,35)
-toggleSA.Position = UDim2.new(0.2,0,0.05,0)
-toggleSA.Text = "Silent Aim: OFF"
-toggleSA.Font = Enum.Font.DenkOne
-toggleSA.TextSize = 20
-toggleSA.TextColor3 = Color3.fromRGB(255,255,255)
-toggleSA.BackgroundColor3 = Color3.fromRGB(45,45,45)
-Instance.new("UICorner", toggleSA)
-
-toggleSA.MouseButton1Click:Connect(function()
-    active = not active
-    toggleSA.Text = active and "Silent Aim: ON" or "Silent Aim: OFF"
-    targetCircle.Visible = active and targetCircle.Visible or false
-end)
-
--- FOV Slider
-local sliderLabel = Instance.new("TextLabel", silentContent)
-sliderLabel.Size = UDim2.new(0.6,0,0,20)
-sliderLabel.Position = UDim2.new(0.2,0,0.15,0)
-sliderLabel.BackgroundTransparency = 1
-sliderLabel.TextColor3 = Color3.fromRGB(255,255,255)
-sliderLabel.Text = "FOV: "..FOV
-sliderLabel.Font = Enum.Font.DenkOne
-sliderLabel.TextSize = 18
-
-local slider = Instance.new("TextButton", silentContent)
-slider.Size = UDim2.new(0.6,0,0,20)
-slider.Position = UDim2.new(0.2,0,0.2,0)
-slider.BackgroundColor3 = Color3.fromRGB(0,170,255)
-slider.Text = ""
-Instance.new("UICorner", slider)
-
-local dragging = false
-slider.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
+-- Function to create toggles in ESP tab
+local function createESPUI(parent)
+    local y = 10
+    for k,v in pairs({"Box","Outline","Name","Distance","Teammates"}) do
+        local btn = Instance.new("TextButton", parent)
+        btn.Size = UDim2.new(0.95,0,0,30)
+        btn.Position = UDim2.new(0.025,0,0, y)
+        btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+        btn.BackgroundTransparency = 0.5
+        btn.TextColor3 = Color3.fromRGB(255,255,255)
+        btn.Font = Enum.Font.DenkOne
+        btn.TextSize = 14
+        btn.Text = v.." OFF"
+        Instance.new("UICorner", btn)
+        btn.MouseButton1Click:Connect(function()
+            ESPSettings[v] = not ESPSettings[v]
+            btn.Text = v.." "..(ESPSettings[v] and "ON" or "OFF")
+        end)
+        table.insert(ESPElements, btn)
+        y = y + 40
     end
-end)
-slider.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
+end
+
+createESPUI(espContent)
+
+-- ================= ESP Logic =================
+local ESP = {}
+local function shouldESP(p)
+    if p==LocalPlayer then return false end
+    if not ESPSettings.Teammates then
+        if LocalPlayer.Team and p.Team and LocalPlayer.Team==p.Team then return false end
     end
+    return true
+end
+
+--// Really Blue ESP
+local function getColor(p)
+    return Color3.fromRGB(0,0,255) -- Really Blue
+end
+
+local function setupESP(p)
+    if ESP[p] then return end
+    local box = Instance.new("SelectionBox")
+    box.LineThickness = 0.05
+    box.SurfaceTransparency = 1
+    box.Parent = workspace
+
+    local hl = Instance.new("Highlight")
+    hl.FillTransparency = 1
+    hl.Parent = workspace
+
+    local bb = Instance.new("BillboardGui")
+    bb.Size = UDim2.new(0,200,0,40)
+    bb.StudsOffset = Vector3.new(0,3,0)
+    bb.AlwaysOnTop = true
+    bb.Parent = workspace
+
+    local txt = Instance.new("TextLabel", bb)
+    txt.Size = UDim2.new(1,0,1,0)
+    txt.BackgroundTransparency = 1
+    txt.Font = Enum.Font.Gotham
+    txt.TextSize = 13
+
+    ESP[p] = {Box=box,HL=hl,BB=bb,TXT=txt}
+end
+
+for _,p in pairs(Players:GetPlayers()) do
+    if p~=LocalPlayer then setupESP(p) end
+end
+Players.PlayerAdded:Connect(setupESP)
+Players.PlayerRemoving:Connect(function(p)
+    if ESP[p] then for _,v in pairs(ESP[p]) do v:Destroy() end ESP[p]=nil end
 end)
+
 RunService.RenderStepped:Connect(function()
-    if dragging then
-        local mouse = UserInputService:GetMouseLocation()
-        local rel = math.clamp(mouse.X - slider.AbsolutePosition.X, 0, slider.AbsoluteSize.X)
-        FOV = math.floor((rel/slider.AbsoluteSize.X)*300) -- max 300 px
-        targetCircle.Size = UDim2.new(0,FOV,0,FOV)
-        sliderLabel.Text = "FOV: "..FOV
-    end
-end)
+    for p,e in pairs(ESP) do
+        local c = p.Character
+        local hrp = c and c:FindFirstChild("HumanoidRootPart")
+        local hum = c and c:FindFirstChildOfClass("Humanoid")
+        local isVisible = hum and hum.Health>0 and hrp and c and shouldESP(p)
+        if isVisible then
+            local col = getColor(p)
+            e.Box.Color3 = col
+            e.HL.OutlineColor = col
+            e.TXT.TextColor3 = col
 
--- Click detection
-UserInputService.InputBegan:Connect(function(input,gameProcessed)
-    if active and input.UserInputType == Enum.UserInputType.MouseButton1 then
-        local mousePos = input.Position
-        if mousePos.X >= Camera.ViewportSize.X/2 then -- right half of screen
-            targetCircle.Position = UDim2.new(0,mousePos.X,0,mousePos.Y)
-            targetCircle.Visible = true
+            e.Box.Visible = ESPSettings.Box
+            e.Box.Adornee = ESPSettings.Box and c or nil
 
-            -- Detect players inside circle
-            local closestPlayer = nil
-            local shortestDist = math.huge
-            for _,player in pairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                    local screenPos, onScreen = Camera:WorldToViewportPoint(player.Character.HumanoidRootPart.Position)
-                    if onScreen then
-                        local dist = (Vector2.new(screenPos.X,screenPos.Y) - Vector2.new(mousePos.X,mousePos.Y)).Magnitude
-                        if dist <= FOV/2 and dist < shortestDist then
-                            closestPlayer = player
-                            shortestDist = dist
-                        end
-                    end
+            e.HL.Enabled = ESPSettings.Outline
+            e.HL.Adornee = ESPSettings.Outline and c or nil
+
+            local showBB = ESPSettings.Name or ESPSettings.Distance
+            e.BB.Enabled = showBB
+            e.BB.Adornee = showBB and hrp or nil
+
+            if showBB then
+                local t = ""
+                if ESPSettings.Name then t=p.Name end
+                if ESPSettings.Distance then
+                    local dist = math.floor((Camera.CFrame.Position-hrp.Position).Magnitude)
+                    if ESPSettings.Name then t=t.." ["..dist.." studs]" else t=dist.." studs" end
                 end
+                e.TXT.Text = t
             end
-
-            if closestPlayer then
-                print("Alvo detectado dentro do clique:", closestPlayer.Name)
-                -- Aqui você pode chamar a função do seu tiro e passar closestPlayer
-            end
+        else
+            e.Box.Visible=false
+            e.Box.Adornee=nil
+            e.HL.Enabled=false
+            e.HL.Adornee=nil
+            e.BB.Enabled=false
+            e.BB.Adornee=nil
         end
     end
 end)
+
+return LMG2L["ScreenGui"], require
