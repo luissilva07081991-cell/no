@@ -1,4 +1,4 @@
---[[ Universal Hub LMG2L - Completo com Hitbox e ESP funcionando ]]--
+--[[ Universal Hub LMG2L - Completo com Hitbox, ESP e detalhes visuais nos botões ]]--
 
 local LMG2L = {}
 
@@ -175,12 +175,11 @@ LocalPlayer.CharacterAdded:Connect(function()
     criarOpenBtn()
 end)
 
--- ================= Hitbox Original Integrado =================
+-- ================= Hitbox =================
 local _G_HeadSize = 10
 local _G_Disabled = true
 local playersList = {}
 
--- TextBox de tamanho
 local sizeBox = Instance.new("TextBox")
 sizeBox.Size = UDim2.new(0.4,0,0,30)
 sizeBox.Position = UDim2.new(0.05,0,0,10)
@@ -193,7 +192,6 @@ sizeBox.TextSize = 18
 Instance.new("UICorner", sizeBox)
 sizeBox.Parent = hitboxContent
 
--- Botão profissional Hitbox
 local hitboxBtn2 = Instance.new("TextButton")
 hitboxBtn2.Size = UDim2.new(0.9,0,0,50)
 hitboxBtn2.Position = UDim2.new(0.05,0,0,60)
@@ -206,88 +204,55 @@ hitboxBtn2.Text = "Enable Hitbox"
 Instance.new("UICorner", hitboxBtn2)
 hitboxBtn2.Parent = hitboxContent
 
--- Hover effect
-local uigrad = Instance.new("UIGradient")
-uigrad.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(84,84,84)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0,0,0))
-}
-uigrad.Rotation = 45
-uigrad.Parent = hitboxBtn2
+-- ====== Adicionando detalhes brancos nos botões ======
+local function addButtonDetails(button)
+    -- Borda branca fina
+    local border = Instance.new("Frame", button)
+    border.Size = UDim2.new(1,2,1,2)
+    border.Position = UDim2.new(0,-1,0,-1)
+    border.BackgroundColor3 = Color3.fromRGB(255,255,255)
+    border.BackgroundTransparency = 0.8
+    border.ZIndex = button.ZIndex - 1
+    border.ClipsDescendants = true
+    Instance.new("UICorner", border)
 
-hitboxBtn2.MouseEnter:Connect(function() hitboxBtn2.BackgroundTransparency = 0 end)
-hitboxBtn2.MouseLeave:Connect(function() hitboxBtn2.BackgroundTransparency = 0.2 end)
+    -- Gradiente sutil
+    local grad = Instance.new("UIGradient")
+    grad.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(84,84,84)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0,0,0))
+    }
+    grad.Rotation = 45
+    grad.Parent = button
 
--- Atualiza tamanho
-sizeBox.FocusLost:Connect(function()
-    local size = tonumber(sizeBox.Text)
-    if size then
-        _G_HeadSize = size
-    else
-        sizeBox.Text = tostring(_G_HeadSize)
-    end
-end)
-
--- Toggle Hitbox
-hitboxBtn2.MouseButton1Click:Connect(function()
-    _G_Disabled = not _G_Disabled
-    hitboxBtn2.Text = _G_Disabled and "Enable Hitbox" or "Disable Hitbox"
-end)
-
--- Função reset hitbox
-local function resetHitbox(plr)
-    if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-        local part = plr.Character.HumanoidRootPart
-        part.Size = Vector3.new(2,2,1)
-        part.Transparency = 0
-        part.BrickColor = BrickColor.new("Medium stone grey")
-        part.Material = Enum.Material.Plastic
-        part.CanCollide = true
-    end
+    -- Hover
+    button.MouseEnter:Connect(function() button.BackgroundTransparency = 0 end)
+    button.MouseLeave:Connect(function() button.BackgroundTransparency = 0.2 end)
 end
 
--- Aplica hitbox
-RunService.RenderStepped:Connect(function()
-    playersList = {}
-    for _, plr in ipairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-            table.insert(playersList, plr)
-        end
-    end
-
-    for _, plr in ipairs(playersList) do
-        local part = plr.Character.HumanoidRootPart
-        if not _G_Disabled then
-            part.Size = Vector3.new(_G_HeadSize,_G_HeadSize,_G_HeadSize)
-            part.Transparency = 0.8
-            part.BrickColor = BrickColor.new("Really blue")
-            part.Material = Enum.Material.Neon
-            part.CanCollide = false
-        else
-            resetHitbox(plr)
-        end
-    end
-end)
+addButtonDetails(hitboxBtn2)
 
 -- ================= ESP =================
 local ESPSettings = {Box=false,Outline=false,Name=false,Distance=false,Teammates=false}
 local ESPElements = {}
 local ESP = {}
 
--- Function to create toggles in ESP tab
 local function createESPUI(parent)
     local y = 10
-    for k,v in pairs({"Box","Outline","Name","Distance","Teammates"}) do
+    for _,v in pairs({"Box","Outline","Name","Distance","Teammates"}) do
         local btn = Instance.new("TextButton", parent)
         btn.Size = UDim2.new(0.95,0,0,30)
-        btn.Position = UDim2.new(0.025,0,0, y)
+        btn.Position = UDim2.new(0.025,0,0,y)
         btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-        btn.BackgroundTransparency = 0.5
+        btn.BackgroundTransparency = 0.2
         btn.TextColor3 = Color3.fromRGB(255,255,255)
         btn.Font = Enum.Font.DenkOne
         btn.TextSize = 14
         btn.Text = v.." OFF"
         Instance.new("UICorner", btn)
+
+        addButtonDetails(btn) -- adiciona borda e gradiente
+
         btn.MouseButton1Click:Connect(function()
             ESPSettings[v] = not ESPSettings[v]
             btn.Text = v.." "..(ESPSettings[v] and "ON" or "OFF")
@@ -299,7 +264,7 @@ end
 
 createESPUI(espContent)
 
--- Function to determine if player should have ESP
+-- Funções ESP (mesmo que antes)
 local function shouldESP(p)
     if p==LocalPlayer then return false end
     if not ESPSettings.Teammates then
@@ -308,13 +273,10 @@ local function shouldESP(p)
     return true
 end
 
-local function getColor(p)
-    return Color3.fromRGB(0,0,255) -- Really Blue
-end
+local function getColor(p) return Color3.fromRGB(0,0,255) end
 
 local function setupESP(p)
     if ESP[p] then return end
-
     local box = Instance.new("SelectionBox")
     box.LineThickness = 0.05
     box.SurfaceTransparency = 1
@@ -342,13 +304,9 @@ local function setupESP(p)
     ESP[p] = {Box=box,HL=hl,BB=bb,TXT=txt}
 end
 
-for _,p in pairs(Players:GetPlayers()) do
-    if p~=LocalPlayer then setupESP(p) end
-end
+for _,p in pairs(Players:GetPlayers()) do if p~=LocalPlayer then setupESP(p) end end
 Players.PlayerAdded:Connect(setupESP)
-Players.PlayerRemoving:Connect(function(p)
-    if ESP[p] then for _,v in pairs(ESP[p]) do v:Destroy() end ESP[p]=nil end
-end)
+Players.PlayerRemoving:Connect(function(p) if ESP[p] then for _,v in pairs(ESP[p]) do v:Destroy() end ESP[p]=nil end end)
 
 RunService.RenderStepped:Connect(function()
     for p,e in pairs(ESP) do
