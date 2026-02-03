@@ -159,51 +159,41 @@ LMG2L["UIAspectRatioConstraint_13"]["AspectRatio"] = 1.20442;
 -- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.LocalScript
 LMG2L["LocalScript_14"] = Instance.new("LocalScript", LMG2L["ScreenGui_1"]);
 
---====================== FUNCIONALIDADE DE MINIMIZAR/ABRIR ======================--
-
+--====================== FUNCIONALIDADE MINIMIZAR / ABRIR ======================--
 local function C_14()
 	local script = LMG2L["LocalScript_14"]
-	local TweenService = game:GetService("TweenService")
-	local mainFrame = script.Parent:WaitForChild("MainFrame")
+	local screenGui = script.Parent
+	local mainFrame = screenGui:WaitForChild("MainFrame")
 	local header = mainFrame:WaitForChild("Header")
-	local toggleButton = header:WaitForChild("TextButton")
-	
-	local originalPosition = mainFrame.Position
-	local minimizedPosition = UDim2.new(originalPosition.X.Scale, originalPosition.X.Offset, 0, 0) -- sobe para topo
-	local tweenTime = 0.5
+	local toggleButton = header:WaitForChild("TextButton") -- botão "-"
 
+	-- Cria botão "+" para abrir a GUI
+	local openButton = Instance.new("TextButton")
+	openButton.Parent = screenGui
+	openButton.Size = UDim2.new(0,50,0,50)
+	openButton.Position = UDim2.new(0,10,0,10)
+	openButton.BackgroundColor3 = Color3.fromRGB(0,0,0)
+	openButton.TextColor3 = Color3.fromRGB(255,255,255)
+	openButton.Font = Enum.Font.SourceSansBold
+	openButton.TextScaled = true
+	openButton.Text = "+"
+	openButton.Visible = false -- começa invisível
+
+	-- Função de minimizar
 	local function minimize()
-		local tween = TweenService:Create(mainFrame, TweenInfo.new(tweenTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = minimizedPosition})
-		tween:Play()
-		tween.Completed:Wait()
-
-		for _, child in pairs(mainFrame:GetChildren()) do
-			if child ~= header then
-				child.Visible = false
-			end
-		end
-
-		toggleButton.Text = "+"
+		mainFrame.Visible = false
+		openButton.Visible = true
 	end
 
-	local function restore()
-		for _, child in pairs(mainFrame:GetChildren()) do
-			child.Visible = true
-		end
-
-		local tween = TweenService:Create(mainFrame, TweenInfo.new(tweenTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = originalPosition})
-		tween:Play()
-
-		toggleButton.Text = "-"
+	-- Função de abrir
+	local function openGUI()
+		mainFrame.Visible = true
+		openButton.Visible = false
 	end
 
-	toggleButton.MouseButton1Click:Connect(function()
-		if toggleButton.Text == "-" then
-			minimize()
-		else
-			restore()
-		end
-	end)
+	-- Conecta os botões
+	toggleButton.MouseButton1Click:Connect(minimize)
+	openButton.MouseButton1Click:Connect(openGUI)
 end
 
 task.spawn(C_14)
