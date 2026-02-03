@@ -1,10 +1,11 @@
---[[ Universal Hub LMG2L - Completo e funcional ]]--
+--[[ Universal Hub LMG2L - Completo e funcional (ESP Really Blue + Hitbox Tab) ]]--
 
 local LMG2L = {}
 
 --// Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
@@ -14,8 +15,7 @@ LMG2L["ScreenGui"].Name = "UniversalHub"
 LMG2L["ScreenGui"].ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 --// MainFrame
-LMG2L["MainFrame"] = Instance.new("Frame", LMG2L["ScreenGui"])
-local main = LMG2L["MainFrame"]
+local main = Instance.new("Frame", LMG2L["ScreenGui"])
 main.Size = UDim2.new(0.32,0,0.56,0)
 main.Position = UDim2.new(0.34,0,0.15,0)
 main.BackgroundColor3 = Color3.fromRGB(0,0,0)
@@ -60,7 +60,27 @@ toggleBtn.Font = Enum.Font.GothamBold
 toggleBtn.TextSize = 35
 Instance.new("UICorner", toggleBtn)
 
--- Button container (left)
+-- Open button when minimized
+local openBtn = Instance.new("TextButton", LMG2L["ScreenGui"])
+openBtn.Size = UDim2.new(0,50,0,50)
+openBtn.Position = UDim2.new(0,10,0,10)
+openBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+openBtn.TextColor3 = Color3.fromRGB(255,255,255)
+openBtn.Text = "+"
+openBtn.Visible = false
+openBtn.Font = Enum.Font.SourceSansBold
+openBtn.TextScaled = true
+
+toggleBtn.MouseButton1Click:Connect(function()
+    main.Visible = false
+    openBtn.Visible = true
+end)
+openBtn.MouseButton1Click:Connect(function()
+    main.Visible = true
+    openBtn.Visible = false
+end)
+
+-- Left panel with tabs
 local leftFrame = Instance.new("Frame", main)
 leftFrame.Size = UDim2.new(0.32,0,0.79,0)
 leftFrame.Position = UDim2.new(0.02,0,0.165,0)
@@ -68,7 +88,7 @@ leftFrame.BackgroundColor3 = Color3.fromRGB(84,84,84)
 leftFrame.BorderSizePixel = 0
 Instance.new("UICorner", leftFrame)
 
--- Tabs buttons
+-- Tab buttons
 local hitboxBtn = Instance.new("TextButton", leftFrame)
 hitboxBtn.Size = UDim2.new(0.87,0,0.16,0)
 hitboxBtn.Position = UDim2.new(0.07,0,0.03,0)
@@ -91,7 +111,7 @@ espBtn.Font = Enum.Font.DenkOne
 espBtn.TextSize = 30
 Instance.new("UICorner", espBtn)
 
--- Tabs content frame (right)
+-- Right frame to hold tab content
 local rightFrame = Instance.new("Frame", main)
 rightFrame.Size = UDim2.new(0.61,0,0.79,0)
 rightFrame.Position = UDim2.new(0.37,0,0.165,0)
@@ -99,18 +119,18 @@ rightFrame.BackgroundColor3 = Color3.fromRGB(84,84,84)
 rightFrame.BorderSizePixel = 0
 Instance.new("UICorner", rightFrame)
 
--- Create content frames
+-- Hitbox Content
 local hitboxContent = Instance.new("Frame", rightFrame)
 hitboxContent.Size = UDim2.new(1,0,1,0)
 hitboxContent.BackgroundTransparency = 1
 hitboxContent.Visible = true
 
+-- ESP Content
 local espContent = Instance.new("Frame", rightFrame)
 espContent.Size = UDim2.new(1,0,1,0)
 espContent.BackgroundTransparency = 1
 espContent.Visible = false
 
--- Button logic to switch tabs
 hitboxBtn.MouseButton1Click:Connect(function()
     hitboxContent.Visible = true
     espContent.Visible = false
@@ -120,28 +140,78 @@ espBtn.MouseButton1Click:Connect(function()
     espContent.Visible = true
 end)
 
--- Minimize/Restore
-local openBtn = Instance.new("TextButton", LMG2L["ScreenGui"])
-openBtn.Size = UDim2.new(0,50,0,50)
-openBtn.Position = UDim2.new(0,10,0,10)
-openBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-openBtn.TextColor3 = Color3.fromRGB(255,255,255)
-openBtn.Text = "+"
-openBtn.Visible = false
-openBtn.Font = Enum.Font.SourceSansBold
-openBtn.TextScaled = true
+-- ================= Hitbox Script inside Hitbox Tab =================
+local headSize = 10
+local hitboxEnabled = false
+local playersList = {}
 
-toggleBtn.MouseButton1Click:Connect(function()
-    main.Visible = false
-    openBtn.Visible = true
-end)
-openBtn.MouseButton1Click:Connect(function()
-    main.Visible = true
-    openBtn.Visible = false
+-- UI inside hitboxContent
+local textBox = Instance.new("TextBox", hitboxContent)
+textBox.Size = UDim2.new(0.9,0,0,30)
+textBox.Position = UDim2.new(0.05,0,0,10)
+textBox.BackgroundColor3 = Color3.fromRGB(84,84,84)
+textBox.TextColor3 = Color3.fromRGB(255,255,255)
+textBox.Font = Enum.Font.DenkOne
+textBox.TextSize = 18
+textBox.Text = tostring(headSize)
+Instance.new("UICorner", textBox)
+
+local toggleHitboxBtn = Instance.new("TextButton", hitboxContent)
+toggleHitboxBtn.Size = UDim2.new(0.9,0,0,30)
+toggleHitboxBtn.Position = UDim2.new(0.05,0,0,50)
+toggleHitboxBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+toggleHitboxBtn.TextColor3 = Color3.fromRGB(255,255,255)
+toggleHitboxBtn.Font = Enum.Font.DenkOne
+toggleHitboxBtn.TextSize = 18
+toggleHitboxBtn.Text = "Enable Hitbox"
+Instance.new("UICorner", toggleHitboxBtn)
+
+-- Function to populate player list
+local function updatePlayers()
+    playersList = {}
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+            table.insert(playersList, p)
+        end
+    end
+end
+
+updatePlayers()
+Players.PlayerAdded:Connect(updatePlayers)
+Players.PlayerRemoving:Connect(updatePlayers)
+
+-- Update head size from TextBox
+textBox.FocusLost:Connect(function()
+    local size = tonumber(textBox.Text)
+    if size then
+        headSize = size
+    else
+        textBox.Text = tostring(headSize)
+    end
 end)
 
--- ================= ESP Settings inside the ESP tab =================
-local NO_TEAM_COLOR = Color3.fromRGB(0,255,0)
+-- Toggle Hitbox
+toggleHitboxBtn.MouseButton1Click:Connect(function()
+    hitboxEnabled = not hitboxEnabled
+    toggleHitboxBtn.Text = hitboxEnabled and "Disable Hitbox" or "Enable Hitbox"
+end)
+
+-- Apply hitbox
+RunService.RenderStepped:Connect(function()
+    if hitboxEnabled then
+        for _, p in pairs(playersList) do
+            if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                local hrp = p.Character.HumanoidRootPart
+                hrp.Size = Vector3.new(headSize, headSize, headSize)
+                hrp.BrickColor = BrickColor.new("Really blue")
+                hrp.Material = Enum.Material.Neon
+                hrp.CanCollide = false
+            end
+        end
+    end
+end)
+
+-- ================= ESP Tab Logic =================
 local ESPSettings = {Box=false,Outline=false,Name=false,Distance=false,Teammates=false}
 local ESPElements = {}
 
@@ -151,7 +221,7 @@ local function createESPUI(parent)
     for k,v in pairs({"Box","Outline","Name","Distance","Teammates"}) do
         local btn = Instance.new("TextButton", parent)
         btn.Size = UDim2.new(0.95,0,0,30)
-        btn.Position = UDim2.new(0.025,0,0, y)
+        btn.Position = UDim2.new(0.025,0,0,y)
         btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
         btn.BackgroundTransparency = 0.5
         btn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -170,7 +240,7 @@ end
 
 createESPUI(espContent)
 
--- ================= ESP Logic =================
+-- ESP Logic
 local ESP = {}
 local function shouldESP(p)
     if p==LocalPlayer then return false end
@@ -181,7 +251,7 @@ local function shouldESP(p)
 end
 
 local function getColor(p)
-    return p.Team and p.Team.TeamColor.Color or NO_TEAM_COLOR
+    return Color3.fromRGB(0,0,255) -- Really Blue
 end
 
 local function setupESP(p)
