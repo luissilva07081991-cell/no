@@ -6,367 +6,187 @@ local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 
 -------------------------------------------------
+-- CONFIG
+-------------------------------------------------
+_G.HeadSize = 10
+local hitboxEnabled = false
+local espEnabled = false
+local highlights = {}
+
+-------------------------------------------------
 -- GUI BASE
 -------------------------------------------------
-
-local gui = Instance.new("ScreenGui")
-gui.ResetOnSpawn = false
-gui.Parent = LocalPlayer.PlayerGui
-
-local main = Instance.new("Frame", gui)
-main.Size = UDim2.fromScale(0.38,0.55) -- largura menor
-main.Position = UDim2.fromScale(0.5,0.5)
-main.AnchorPoint = Vector2.new(0.5,0.5)
-main.BackgroundColor3 = Color3.fromRGB(20,20,20)
-main.BorderSizePixel = 0
-main.Active = true
-main.Draggable = true
-Instance.new("UICorner", main).CornerRadius = UDim.new(0,18)
+local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "PvPMenu"
 
 -------------------------------------------------
--- SIDEBAR
+-- MENU PRINCIPAL (frame)
 -------------------------------------------------
-
-local sidebar = Instance.new("Frame", main)
-sidebar.Size = UDim2.fromScale(0.28,1)
-sidebar.BackgroundColor3 = Color3.fromRGB(15,15,15)
-sidebar.BorderSizePixel = 0
-Instance.new("UICorner", sidebar).CornerRadius = UDim.new(0,18)
-
-local sideLayout = Instance.new("UIListLayout", sidebar)
-sideLayout.Padding = UDim.new(0,10)
-
--------------------------------------------------
--- CONTEÚDO
--------------------------------------------------
-
-local content = Instance.new("Frame", main)
-content.Size = UDim2.fromScale(0.72,1)
-content.Position = UDim2.fromScale(0.28,0)
-content.BackgroundColor3 = Color3.fromRGB(25,25,25)
-content.BorderSizePixel = 0
-Instance.new("UICorner", content).CornerRadius = UDim.new(0,18)
-
-local layout = Instance.new("UIListLayout", content)
-layout.Padding = UDim.new(0,12)
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0,250,0,180)
+frame.Position = UDim2.new(0.5,-125,0.5,-60)
+frame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+frame.Visible = true -- já visível
+frame.Active = true
+frame.Draggable = true
+frame.BorderSizePixel = 0
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0,14)
 
 -------------------------------------------------
--- FUNÇÕES DE UI
+-- TOPO COM BOTÃO MINIMIZAR/ABRIR
 -------------------------------------------------
+local top = Instance.new("Frame", frame)
+top.Size = UDim2.new(1,0,0,30)
+top.BackgroundColor3 = Color3.fromRGB(30,30,30)
+Instance.new("UICorner", top).CornerRadius = UDim.new(0,14)
 
-local function newPage()
-	local p = Instance.new("Frame", content)
-	p.Size = UDim2.fromScale(1,1)
-	p.BackgroundTransparency = 1
-	p.Visible = false
+local title = Instance.new("TextLabel", top)
+title.Size = UDim2.new(1,-30,1,0)
+title.BackgroundTransparency = 1
+title.Text = "Hub Universal"
+title.Font = Enum.Font.GothamBold
+title.TextScaled = true
+title.TextColor3 = Color3.new(1,1,1)
 
-	local layout = Instance.new("UIListLayout", p)
-	layout.Padding = UDim.new(0,10)
-
-	return p
-end
-
-local function createTab(name)
-	local btn = Instance.new("TextButton", sidebar)
-	btn.Size = UDim2.new(1,-20,0,50)
-	btn.BackgroundColor3 = Color3.fromRGB(30,30,30)
-	btn.Text = name
-	btn.TextColor3 = Color3.new(1,1,1)
-	btn.Font = Enum.Font.GothamBold
-	btn.TextSize = 16
-	Instance.new("UICorner", btn).CornerRadius = UDim.new(0,12)
-
-	local page = newPage()
-
-	btn.MouseButton1Click:Connect(function()
-		for _,v in pairs(content:GetChildren()) do
-			if v:IsA("Frame") then v.Visible = false end
-		end
-		page.Visible = true
-	end)
-
-	return page
-end
-
-local function createToggle(parent,text,callback)
-	local frame = Instance.new("Frame", parent)
-	frame.Size = UDim2.new(1,-40,0,55)
-	frame.Position = UDim2.new(0,20,0,0)
-	frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
-	Instance.new("UICorner", frame).CornerRadius = UDim.new(0,12)
-
-	local label = Instance.new("TextLabel", frame)
-	label.Size = UDim2.fromScale(0.6,1)
-	label.BackgroundTransparency = 1
-	label.Text = text
-	label.TextColor3 = Color3.new(1,1,1)
-	label.Font = Enum.Font.Gotham
-
-	local btn = Instance.new("TextButton", frame)
-	btn.Size = UDim2.fromOffset(70,28)
-	btn.Position = UDim2.new(1,-90,0.5,-14)
-	btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
-	btn.Text = ""
-	Instance.new("UICorner", btn).CornerRadius = UDim.new(1,0)
-
-	local state=false
-
-	btn.MouseButton1Click:Connect(function()
-		state = not state
-		btn.BackgroundColor3 = state and Color3.fromRGB(0,170,255) or Color3.fromRGB(60,60,60)
-		callback(state)
-	end)
-end
-
-local function createBox(parent,text,default)
-	local frame = Instance.new("Frame", parent)
-	frame.Size = UDim2.new(1,-40,0,55)
-	frame.Position = UDim2.new(0,20,0,0)
-	frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
-	Instance.new("UICorner", frame).CornerRadius = UDim.new(0,12)
-
-	local label = Instance.new("TextLabel", frame)
-	label.Size = UDim2.new(0.6,0,1,0)
-	label.BackgroundTransparency = 1
-	label.Text = text
-	label.TextColor3 = Color3.new(1,1,1)
-	label.Font = Enum.Font.Gotham
-
-	local box = Instance.new("TextBox", frame)
-	box.Size = UDim2.new(0.3,0,0.7,0)
-	box.Position = UDim2.new(0.68,0,0.15,0)
-	box.BackgroundColor3 = Color3.fromRGB(50,50,50)
-	box.TextColor3 = Color3.new(1,1,1)
-	box.Text = default or ""
-	box.ClearTextOnFocus=false
-	Instance.new("UICorner", box).CornerRadius = UDim.new(0,8)
-
-	return box
-end
+local minimize = Instance.new("TextButton", top)
+minimize.Size = UDim2.new(0,30,1,0)
+minimize.Position = UDim2.new(1,-30,0,0)
+minimize.Text = "-"
+minimize.TextScaled = true
+minimize.BackgroundTransparency = 1
+minimize.TextColor3 = Color3.new(1,1,1)
 
 -------------------------------------------------
--- ABAS
+-- HITBOX SIZE
 -------------------------------------------------
-
-local hitboxPage = createTab("Hitbox")
-local espPage = createTab("ESP")
-hitboxPage.Visible = true
+local sizeBox = Instance.new("TextBox", frame)
+sizeBox.Position = UDim2.new(0.1,0,0,45)
+sizeBox.Size = UDim2.new(0.8,0,0,28)
+sizeBox.Text = "10"
+sizeBox.PlaceholderText = "Hitbox Size"
+sizeBox.TextScaled = true
+sizeBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+sizeBox.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner", sizeBox)
 
 -------------------------------------------------
--- HITBOX
+-- BOTÃO HITBOX
 -------------------------------------------------
-
-local HeadSize = 10
-local hitboxEnabled = false
-local playersList = {}
-
--- Input box para tamanho do hitbox
-local sizeBox = createBox(hitboxPage,"Tamanho do Hitbox",tostring(HeadSize))
-sizeBox.Position = UDim2.new(0,20,0,10)
-
-sizeBox.FocusLost:Connect(function()
-	local val = tonumber(sizeBox.Text)
-	if val then HeadSize = val end
-end)
-
--- Botão ON/OFF Hitbox
-local hitboxBtn = Instance.new("TextButton", hitboxPage)
-hitboxBtn.Size = UDim2.new(0.5,0,0,40)
-hitboxBtn.Position = UDim2.new(0.25,0,0,80)
-hitboxBtn.Text = "Enable Hitbox"
-hitboxBtn.Font = Enum.Font.GothamBold
-hitboxBtn.TextColor3 = Color3.new(1,1,1)
+local hitboxBtn = Instance.new("TextButton", frame)
+hitboxBtn.Position = UDim2.new(0.1,0,0,80)
+hitboxBtn.Size = UDim2.new(0.8,0,0,28)
+hitboxBtn.Text = "Hitbox OFF"
+hitboxBtn.TextScaled = true
 hitboxBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
-Instance.new("UICorner", hitboxBtn).CornerRadius = UDim.new(0,12)
-
-hitboxBtn.MouseButton1Click:Connect(function()
-	hitboxEnabled = not hitboxEnabled
-	hitboxBtn.Text = hitboxEnabled and "Disable Hitbox" or "Enable Hitbox"
-end)
-
--- TextBox para Transferência do Hitbox
-local transferBox = createBox(hitboxPage, "Transferência", "10")
-transferBox.Position = UDim2.new(0,20,0,140)
-
--- Botão para aplicar transferência
-local transferBtn = Instance.new("TextButton", hitboxPage)
-transferBtn.Size = UDim2.new(0.5,0,0,40)
-transferBtn.Position = UDim2.new(0.25,0,0,200)
-transferBtn.Text = "Aplicar Transferência"
-transferBtn.Font = Enum.Font.GothamBold
-transferBtn.TextColor3 = Color3.new(1,1,1)
-transferBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
-Instance.new("UICorner", transferBtn).CornerRadius = UDim.new(0,12)
-
-transferBtn.MouseButton1Click:Connect(function()
-	local val = tonumber(transferBox.Text)
-	if val then
-		for _, plr in pairs(playersList) do
-			if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-				local root = plr.Character.HumanoidRootPart
-				root.Size = Vector3.new(val,val,val)
-			end
-		end
-	end
-end)
-
--- Atualiza lista de players
-local function updatePlayers()
-	playersList = {}
-	for _,plr in pairs(Players:GetPlayers()) do
-		if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-			table.insert(playersList,plr)
-		end
-	end
-end
-
-Players.PlayerAdded:Connect(updatePlayers)
-Players.PlayerRemoving:Connect(updatePlayers)
-RunService.RenderStepped:Connect(updatePlayers)
-
--- Aplicar hitbox automaticamente quando ativado
-RunService.RenderStepped:Connect(function()
-	if hitboxEnabled then
-		for _,plr in pairs(playersList) do
-			if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-				local root = plr.Character.HumanoidRootPart
-				root.Size = Vector3.new(HeadSize,HeadSize,HeadSize)
-				root.Transparency = 0
-				root.BrickColor = BrickColor.new("Medium stone grey")
-				root.Material = Enum.Material.Plastic
-				root.CanCollide = true
-			end
-		end
-	end
-end)
+hitboxBtn.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner", hitboxBtn)
 
 -------------------------------------------------
--- ESP
+-- BOTÃO ESP
 -------------------------------------------------
-
-local espEnabled=false
-local MAX_DISTANCE=150
-local highlights={}
-
-local function removeESP(plr)
-	if highlights[plr] then
-		highlights[plr]:Destroy()
-		highlights[plr]=nil
-	end
-end
-
-local function createESP(plr,char)
-	if highlights[plr] then return end
-
-	local h=Instance.new("Highlight")
-	h.Adornee=char
-	h.FillColor=Color3.fromRGB(0,170,255)
-	h.OutlineColor=h.FillColor
-	h.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
-	h.Parent=char
-
-	highlights[plr]=h
-end
-
-local espToggle = createToggle(espPage,"Ativar ESP",function(state)
-	espEnabled=state
-	if not state then
-		for p in pairs(highlights) do removeESP(p) end
-	end
-end)
-
-RunService.RenderStepped:Connect(function()
-	if not espEnabled then return end
-	if not LocalPlayer.Character then return end
-
-	local root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-	if not root then return end
-
-	for _,plr in pairs(Players:GetPlayers()) do
-		if plr~=LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-			local dist=(plr.Character.HumanoidRootPart.Position-root.Position).Magnitude
-			if dist<=MAX_DISTANCE then
-				createESP(plr,plr.Character)
-			else
-				removeESP(plr)
-			end
-		end
-	end
-end)
+local espBtn = Instance.new("TextButton", frame)
+espBtn.Position = UDim2.new(0.1,0,0,115)
+espBtn.Size = UDim2.new(0.8,0,0,28)
+espBtn.Text = "ESP OFF"
+espBtn.TextScaled = true
+espBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+espBtn.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner", espBtn)
 
 -------------------------------------------------
 -- MINIMIZAR / ABRIR
 -------------------------------------------------
+local minimized = false
 
-local originalSize = main.Size
-local originalPos = main.Position
-local isOpen = true
+minimize.MouseButton1Click:Connect(function()
+	minimized = not minimized
+	
+	if minimized then
+		frame.Visible = false
+		minimize.Text = "+" -- muda para abrir
+	else
+		frame.Visible = true
+		minimize.Text = "-" -- muda para minimizar
+	end
+end)
 
--- botão "-"
-local minimizeBtn = Instance.new("TextButton", main)
-minimizeBtn.Size = UDim2.fromOffset(32,32)
-minimizeBtn.Position = UDim2.new(1,-40,0,8)
-minimizeBtn.AnchorPoint = Vector2.new(0,0)
-minimizeBtn.BackgroundColor3 = Color3.fromRGB(40,40,40)
-minimizeBtn.Text = "-"
-minimizeBtn.TextColor3 = Color3.new(1,1,1)
-minimizeBtn.Font = Enum.Font.GothamBold
-minimizeBtn.TextSize = 18
-minimizeBtn.BorderSizePixel = 0
-Instance.new("UICorner", minimizeBtn).CornerRadius = UDim.new(1,0)
-
--- botão "+"
-local openBtn = Instance.new("TextButton", gui)
-openBtn.Size = UDim2.fromOffset(32,32)
-openBtn.Position = UDim2.fromScale(0.02,0.85)
-openBtn.Text = "+"
-openBtn.Font = Enum.Font.GothamBold
-openBtn.TextSize = 18
-openBtn.TextColor3 = Color3.new(1,1,1)
-openBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
-openBtn.Visible = false
-openBtn.BorderSizePixel = 0
-Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1,0)
-openBtn.Active = true
-openBtn.Draggable = true
-
-local tweenInfo = TweenInfo.new(
-	0.25,
-	Enum.EasingStyle.Quad,
-	Enum.EasingDirection.Out
-)
-
-local function minimizeHub()
-	if not isOpen then return end
-	isOpen = false
-
-	local tween = TweenService:Create(main, tweenInfo, {
-		Size = UDim2.fromScale(0,0),
-		Position = UDim2.fromScale(0.5,0.5),
-		BackgroundTransparency = 1
-	})
-	tween:Play()
-	tween.Completed:Wait()
-	main.Visible = false
-	openBtn.Visible = true
+-------------------------------------------------
+-- HITBOX (MESMA LÓGICA DO ORIGINAL)
+-------------------------------------------------
+local function updateHitbox()
+	for _,plr in pairs(Players:GetPlayers()) do
+		if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+			local hrp = plr.Character.HumanoidRootPart
+			
+			if hitboxEnabled then
+				hrp.Size = Vector3.new(_G.HeadSize,_G.HeadSize,_G.HeadSize)
+				hrp.Transparency = 0.3
+				hrp.Material = Enum.Material.Neon
+				hrp.BrickColor = BrickColor.new("Really blue")
+				hrp.CanCollide = false
+			else
+				hrp.Size = Vector3.new(2,2,1)
+				hrp.Transparency = 1
+			end
+		end
+	end
 end
 
-local function openHub()
-	if isOpen then return end
-	isOpen = true
-
-	main.Size = UDim2.fromScale(0,0)
-	main.Visible = true
-	main.BackgroundTransparency = 1
-
-	local tween = TweenService:Create(main, tweenInfo, {
-		Size = originalSize,
-		Position = originalPos,
-		BackgroundTransparency = 0
-	})
-	tween:Play()
-	openBtn.Visible = false
+-------------------------------------------------
+-- ESP
+-------------------------------------------------
+local function clearESP()
+	for _,h in pairs(highlights) do
+		h:Destroy()
+	end
+	highlights = {}
 end
 
-minimizeBtn.MouseButton1Click:Connect(minimizeHub)
-openBtn.MouseButton1Click:Connect(openHub)
+local function createESP(player)
+	if player == LocalPlayer then return end
+	
+	local h = Instance.new("Highlight")
+	h.FillColor = Color3.fromRGB(0,170,255)
+	h.OutlineColor = Color3.new(1,1,1)
+	h.FillTransparency = 0.5
+	h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+	h.Adornee = player.Character
+	h.Parent = player.Character
+	
+	highlights[player] = h
+end
+
+-------------------------------------------------
+-- EVENTOS
+-------------------------------------------------
+sizeBox.FocusLost:Connect(function()
+	_G.HeadSize = tonumber(sizeBox.Text) or 10
+end)
+
+hitboxBtn.MouseButton1Click:Connect(function()
+	hitboxEnabled = not hitboxEnabled
+	hitboxBtn.Text = hitboxEnabled and "Hitbox ON" or "Hitbox OFF"
+end)
+
+espBtn.MouseButton1Click:Connect(function()
+	espEnabled = not espEnabled
+	espBtn.Text = espEnabled and "ESP ON" or "ESP OFF"
+	if not espEnabled then clearESP() end
+end)
+
+-------------------------------------------------
+-- LOOP
+-------------------------------------------------
+RunService.RenderStepped:Connect(function()
+	if hitboxEnabled then
+		updateHitbox()
+	end
+	
+	if espEnabled then
+		for _,plr in pairs(Players:GetPlayers()) do
+			if plr.Character and not highlights[plr] then
+				createESP(plr)
+			end
+		end
+	end
+end)
