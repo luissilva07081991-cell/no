@@ -1,4 +1,4 @@
---[[ Universal Hub LMG2L - Completo e funcional (ESP Really Blue) ]]--
+--[[ Universal Hub LMG2L - Completo e funcional (ESP Really Blue + Hitbox) ]]--
 
 local LMG2L = {}
 
@@ -105,41 +105,61 @@ hitboxContent.Size = UDim2.new(1,0,1,0)
 hitboxContent.BackgroundTransparency = 1
 hitboxContent.Visible = true
 
--- Colocando o script ofuscado dentro da aba Hitbox
+-- ================== Script ofuscado dentro da aba Hitbox ==================
 do
     local v0=game:GetService("Players")
     local v1=game:GetService("RunService")
     local v2=v0.LocalPlayer
     local v3=game:GetService("TweenService")
-    local v4=Instance.new("Frame", hitboxContent)
-    local v5=Instance.new("UICorner",v4)
-    local v7=Instance.new("TextBox",v4)
-    local v8=Instance.new("UICorner",v7)
-    local v9=Instance.new("TextButton",v4)
-    local v10=Instance.new("UICorner",v9)
-    local v11=Instance.new("TextButton",v4)
-    local v12=Instance.new("UICorner",v11)
+    local v4=Instance.new("ScreenGui")
+    local v5=Instance.new("Frame")
+    local v6=Instance.new("UICorner")
+    local v7=Instance.new("TextBox")
+    local v8=Instance.new("UICorner")
+    local v9=Instance.new("TextButton")
+    local v10=Instance.new("UICorner")
+    local v11=Instance.new("TextButton")
+    local v12=Instance.new("UICorner")
     local v13=false
-    v4.Size=UDim2.new(0,300,0,150)
-    v4.Position=UDim2.new(0.5,-150,0.5,-75)
-    v4.BackgroundColor3=Color3.fromRGB(10,50,10)
-    v4.BorderSizePixel=0
-    v4.Active=true
-    v4.Draggable=true
-    v4.ClipsDescendants=true
-    v4.BackgroundTransparency=0.2
-    v4.Visible=true
-    v11.Size=UDim2.new(50,0,20,0)
+    v4.Parent=hitboxContent -- << apenas alterado para ficar dentro da aba Hitbox
+    v5.Parent=v4
+    v7.Parent=v5
+    v9.Parent=v5
+    v11.Parent=v5
+    v6.Parent=v5
+    v8.Parent=v7
+    v10.Parent=v9
+    v12.Parent=v11
+    -- (restante do script ofuscado exatamente como você enviou)
+    v5.Size=UDim2.new(1637 -(1523 + 114) ,144 + 16 ,0 -0 ,110)
+    v5.Position=UDim2.new(0.5, -80,0.5, -(1120 -(68 + 997)))
+    v5.BackgroundColor3=Color3.fromRGB(1320 -(226 + 1044) ,217 -167 ,167 -(32 + 85) )
+    v5.BorderSizePixel=0 + 0 
+    v5.Active=true
+    v5.Draggable=true
+    v5.ClipsDescendants=true
+    v5.BackgroundTransparency=0.2
+    v5.Visible=true
+    v6.CornerRadius=UDim.new(0,3 + 7 )
+    v11.Size=UDim2.new(1117 -(892 + 65) ,20)
     v11.Position=UDim2.new(0,0,0,0)
     v11.Text="▼"
-    v11.BackgroundColor3=Color3.fromRGB(100,200,50)
-    v11.TextColor3=Color3.fromRGB(255,255,255)
-    v7.Size=UDim2.new(100,0,20,0)
-    v7.Position=UDim2.new(0,10,0,30)
+    v11.BackgroundColor3=Color3.fromRGB(430 -(87 + 263) ,260 -(67 + 113) ,59 + 21 )
+    v11.TextColor3=Color3.fromRGB(255,626 -371 ,188 + 67 )
+    v12.CornerRadius=UDim.new(0,10)
+    v7.Size=UDim2.new(952 -(802 + 150) ,376 -236 ,0 -0 ,19 + 6 )
+    v7.Position=UDim2.new(997 -(915 + 82) ,10,0 -0 ,15 + 10 )
     v7.Text="10"
-    v7.BackgroundColor3=Color3.fromRGB(50,200,50)
-    v7.TextColor3=Color3.fromRGB(255,255,255)
-    _G.HeadSize=tonumber(v7.Text) or 10
+    v7.BackgroundColor3=Color3.fromRGB(92 -22 ,1257 -(1069 + 118) ,70)
+    v7.TextColor3=Color3.fromRGB(578 -323 ,557 -302 ,45 + 210 )
+    v8.CornerRadius=UDim.new(0,10)
+    v9.Size=UDim2.new(791 -(368 + 423) ,439 -299 ,18 -(10 + 8) ,96 -71 )
+    v9.Position=UDim2.new(442 -(416 + 26) ,31 -21 ,0,96 -41 )
+    v9.Text="Enable Hitbox"
+    v9.BackgroundColor3=Color3.fromRGB(528 -(145 + 293) ,520 -(44 + 386) ,90)
+    v9.TextColor3=Color3.fromRGB(255,1741 -(998 + 488) ,82 + 173 )
+    v10.CornerRadius=UDim.new(0,782 -(201 + 571) )
+    _G.HeadSize=tonumber(v7.Text) or (1148 -(116 + 1022))
     _G.Disabled=true
     local v52={}
     local function v53() 
