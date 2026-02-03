@@ -1,4 +1,4 @@
---[[ Universal Hub LMG2L - Hitbox Funcional + ESP Really Blue ]]--
+--[[ Universal Hub LMG2L - Silent Aim + ESP ]]--
 
 local LMG2L = {}
 
@@ -6,6 +6,7 @@ local LMG2L = {}
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
 local Camera = workspace.CurrentCamera
 
 -- ScreenGui
@@ -88,16 +89,16 @@ leftFrame.BorderSizePixel = 0
 Instance.new("UICorner", leftFrame)
 
 -- Tab buttons
-local hitboxBtn = Instance.new("TextButton", leftFrame)
-hitboxBtn.Size = UDim2.new(0.87,0,0.16,0)
-hitboxBtn.Position = UDim2.new(0.07,0,0.03,0)
-hitboxBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-hitboxBtn.BackgroundTransparency = 0.8
-hitboxBtn.TextColor3 = Color3.fromRGB(255,255,255)
-hitboxBtn.Text = "Hitbox"
-hitboxBtn.Font = Enum.Font.DenkOne
-hitboxBtn.TextSize = 30
-Instance.new("UICorner", hitboxBtn)
+local silentBtn = Instance.new("TextButton", leftFrame)
+silentBtn.Size = UDim2.new(0.87,0,0.16,0)
+silentBtn.Position = UDim2.new(0.07,0,0.03,0)
+silentBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+silentBtn.BackgroundTransparency = 0.8
+silentBtn.TextColor3 = Color3.fromRGB(255,255,255)
+silentBtn.Text = "Silent Aim"
+silentBtn.Font = Enum.Font.DenkOne
+silentBtn.TextSize = 30
+Instance.new("UICorner", silentBtn)
 
 local espBtn = Instance.new("TextButton", leftFrame)
 espBtn.Size = UDim2.new(0.87,0,0.16,0)
@@ -118,11 +119,11 @@ rightFrame.BackgroundColor3 = Color3.fromRGB(84,84,84)
 rightFrame.BorderSizePixel = 0
 Instance.new("UICorner", rightFrame)
 
--- Hitbox Content
-local hitboxContent = Instance.new("Frame", rightFrame)
-hitboxContent.Size = UDim2.new(1,0,1,0)
-hitboxContent.BackgroundTransparency = 1
-hitboxContent.Visible = true
+-- Silent Aim Content
+local silentContent = Instance.new("Frame", rightFrame)
+silentContent.Size = UDim2.new(1,0,1,0)
+silentContent.BackgroundTransparency = 1
+silentContent.Visible = true
 
 -- ESP Content
 local espContent = Instance.new("Frame", rightFrame)
@@ -130,82 +131,113 @@ espContent.Size = UDim2.new(1,0,1,0)
 espContent.BackgroundTransparency = 1
 espContent.Visible = false
 
-hitboxBtn.MouseButton1Click:Connect(function()
-    hitboxContent.Visible = true
+-- Tab functionality
+silentBtn.MouseButton1Click:Connect(function()
+    silentContent.Visible = true
     espContent.Visible = false
 end)
 espBtn.MouseButton1Click:Connect(function()
-    hitboxContent.Visible = false
+    silentContent.Visible = false
     espContent.Visible = true
 end)
 
--- ================= Hitbox Script (FUNCIONAL) =================
-local HeadSize = 10
-local HitboxEnabled = false
-local PlayerList = {}
+-- ==================== Silent Aim Elements ====================
 
--- TextBox for head size
-local headBox = Instance.new("TextBox", hitboxContent)
-headBox.Size = UDim2.new(0.9,0,0,30)
-headBox.Position = UDim2.new(0.05,0,0,10)
-headBox.BackgroundColor3 = Color3.fromRGB(84,84,84)
-headBox.TextColor3 = Color3.fromRGB(255,255,255)
-headBox.Font = Enum.Font.DenkOne
-headBox.TextSize = 18
-headBox.Text = tostring(HeadSize)
-Instance.new("UICorner", headBox)
+local FOV = 100 -- default radius
+local active = false
+local targetCircle = Instance.new("Frame", LMG2L["ScreenGui"])
+targetCircle.Size = UDim2.new(0,FOV,0,FOV)
+targetCircle.AnchorPoint = Vector2.new(0.5,0.5)
+targetCircle.BackgroundColor3 = Color3.fromRGB(0,170,255)
+targetCircle.BackgroundTransparency = 0.7
+targetCircle.BorderSizePixel = 2
+targetCircle.BorderColor3 = Color3.fromRGB(255,255,255)
+targetCircle.Visible = false
+targetCircle.ZIndex = 999
+Instance.new("UICorner", targetCircle)
 
--- Toggle Hitbox
-local toggleHitbox = Instance.new("TextButton", hitboxContent)
-toggleHitbox.Size = UDim2.new(0.9,0,0,30)
-toggleHitbox.Position = UDim2.new(0.05,0,0,50)
-toggleHitbox.BackgroundColor3 = Color3.fromRGB(0,0,0)
-toggleHitbox.TextColor3 = Color3.fromRGB(255,255,255)
-toggleHitbox.Font = Enum.Font.DenkOne
-toggleHitbox.TextSize = 18
-toggleHitbox.Text = "Enable Hitbox"
-Instance.new("UICorner", toggleHitbox)
+-- Toggle Button
+local toggleSA = Instance.new("TextButton", silentContent)
+toggleSA.Size = UDim2.new(0.6,0,0,35)
+toggleSA.Position = UDim2.new(0.2,0,0.05,0)
+toggleSA.Text = "Silent Aim: OFF"
+toggleSA.Font = Enum.Font.DenkOne
+toggleSA.TextSize = 20
+toggleSA.TextColor3 = Color3.fromRGB(255,255,255)
+toggleSA.BackgroundColor3 = Color3.fromRGB(45,45,45)
+Instance.new("UICorner", toggleSA)
 
--- Update PlayerList
-local function updatePlayers()
-    PlayerList = {}
-    for _, p in pairs(Players:GetPlayers()) do
-        if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-            table.insert(PlayerList, p)
-        end
-    end
-end
-
-updatePlayers()
-Players.PlayerAdded:Connect(updatePlayers)
-Players.PlayerRemoving:Connect(updatePlayers)
-
--- Update HeadSize from TextBox
-headBox.FocusLost:Connect(function()
-    local sz = tonumber(headBox.Text)
-    if sz then
-        HeadSize = sz
-    else
-        headBox.Text = tostring(HeadSize)
-    end
+toggleSA.MouseButton1Click:Connect(function()
+    active = not active
+    toggleSA.Text = active and "Silent Aim: ON" or "Silent Aim: OFF"
+    targetCircle.Visible = active and targetCircle.Visible or false
 end)
 
--- Toggle Hitbox
-toggleHitbox.MouseButton1Click:Connect(function()
-    HitboxEnabled = not HitboxEnabled
-    toggleHitbox.Text = HitboxEnabled and "Disable Hitbox" or "Enable Hitbox"
-end)
+-- FOV Slider
+local sliderLabel = Instance.new("TextLabel", silentContent)
+sliderLabel.Size = UDim2.new(0.6,0,0,20)
+sliderLabel.Position = UDim2.new(0.2,0,0.15,0)
+sliderLabel.BackgroundTransparency = 1
+sliderLabel.TextColor3 = Color3.fromRGB(255,255,255)
+sliderLabel.Text = "FOV: "..FOV
+sliderLabel.Font = Enum.Font.DenkOne
+sliderLabel.TextSize = 18
 
--- Apply Hitbox
+local slider = Instance.new("TextButton", silentContent)
+slider.Size = UDim2.new(0.6,0,0,20)
+slider.Position = UDim2.new(0.2,0,0.2,0)
+slider.BackgroundColor3 = Color3.fromRGB(0,170,255)
+slider.Text = ""
+Instance.new("UICorner", slider)
+
+local dragging = false
+slider.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+    end
+end)
+slider.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
 RunService.RenderStepped:Connect(function()
-    if HitboxEnabled then
-        for _, p in pairs(PlayerList) do
-            if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-                local hrp = p.Character.HumanoidRootPart
-                hrp.Size = Vector3.new(HeadSize,HeadSize,HeadSize)
-                hrp.BrickColor = BrickColor.new("Really blue")
-                hrp.Material = Enum.Material.Neon
-                hrp.CanCollide = false
+    if dragging then
+        local mouse = UserInputService:GetMouseLocation()
+        local rel = math.clamp(mouse.X - slider.AbsolutePosition.X, 0, slider.AbsoluteSize.X)
+        FOV = math.floor((rel/slider.AbsoluteSize.X)*300) -- max 300 px
+        targetCircle.Size = UDim2.new(0,FOV,0,FOV)
+        sliderLabel.Text = "FOV: "..FOV
+    end
+end)
+
+-- Click detection
+UserInputService.InputBegan:Connect(function(input,gameProcessed)
+    if active and input.UserInputType == Enum.UserInputType.MouseButton1 then
+        local mousePos = input.Position
+        if mousePos.X >= Camera.ViewportSize.X/2 then -- right half of screen
+            targetCircle.Position = UDim2.new(0,mousePos.X,0,mousePos.Y)
+            targetCircle.Visible = true
+
+            -- Detect players inside circle
+            local closestPlayer = nil
+            local shortestDist = math.huge
+            for _,player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    local screenPos, onScreen = Camera:WorldToViewportPoint(player.Character.HumanoidRootPart.Position)
+                    if onScreen then
+                        local dist = (Vector2.new(screenPos.X,screenPos.Y) - Vector2.new(mousePos.X,mousePos.Y)).Magnitude
+                        if dist <= FOV/2 and dist < shortestDist then
+                            closestPlayer = player
+                            shortestDist = dist
+                        end
+                    end
+                end
+            end
+
+            if closestPlayer then
+                print("Alvo detectado dentro do clique:", closestPlayer.Name)
+                -- Aqui você pode chamar a função do seu tiro e passar closestPlayer
             end
         end
     end
