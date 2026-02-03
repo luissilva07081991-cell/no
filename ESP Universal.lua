@@ -1,20 +1,19 @@
---[[ Universal Hub LMG2L - Completo e funcional (ESP Really Blue + Hitbox Tab) ]]--
+--[[ Universal Hub LMG2L - Hitbox Funcional + ESP Really Blue ]]--
 
 local LMG2L = {}
 
---// Services
+-- Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
---// ScreenGui
+-- ScreenGui
 LMG2L["ScreenGui"] = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 LMG2L["ScreenGui"].Name = "UniversalHub"
 LMG2L["ScreenGui"].ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
---// MainFrame
+-- MainFrame
 local main = Instance.new("Frame", LMG2L["ScreenGui"])
 main.Size = UDim2.new(0.32,0,0.56,0)
 main.Position = UDim2.new(0.34,0,0.15,0)
@@ -22,7 +21,7 @@ main.BackgroundColor3 = Color3.fromRGB(0,0,0)
 main.BorderSizePixel = 0
 Instance.new("UICorner", main)
 
---// Header
+-- Header
 local header = Instance.new("Frame", main)
 header.Size = UDim2.new(1,0,0.15,0)
 header.BackgroundColor3 = Color3.fromRGB(0,0,0)
@@ -140,38 +139,39 @@ espBtn.MouseButton1Click:Connect(function()
     espContent.Visible = true
 end)
 
--- ================= Hitbox Script inside Hitbox Tab =================
-local headSize = 10
-local hitboxEnabled = false
-local playersList = {}
+-- ================= Hitbox Script (FUNCIONAL) =================
+local HeadSize = 10
+local HitboxEnabled = false
+local PlayerList = {}
 
--- UI inside hitboxContent
-local textBox = Instance.new("TextBox", hitboxContent)
-textBox.Size = UDim2.new(0.9,0,0,30)
-textBox.Position = UDim2.new(0.05,0,0,10)
-textBox.BackgroundColor3 = Color3.fromRGB(84,84,84)
-textBox.TextColor3 = Color3.fromRGB(255,255,255)
-textBox.Font = Enum.Font.DenkOne
-textBox.TextSize = 18
-textBox.Text = tostring(headSize)
-Instance.new("UICorner", textBox)
+-- TextBox for head size
+local headBox = Instance.new("TextBox", hitboxContent)
+headBox.Size = UDim2.new(0.9,0,0,30)
+headBox.Position = UDim2.new(0.05,0,0,10)
+headBox.BackgroundColor3 = Color3.fromRGB(84,84,84)
+headBox.TextColor3 = Color3.fromRGB(255,255,255)
+headBox.Font = Enum.Font.DenkOne
+headBox.TextSize = 18
+headBox.Text = tostring(HeadSize)
+Instance.new("UICorner", headBox)
 
-local toggleHitboxBtn = Instance.new("TextButton", hitboxContent)
-toggleHitboxBtn.Size = UDim2.new(0.9,0,0,30)
-toggleHitboxBtn.Position = UDim2.new(0.05,0,0,50)
-toggleHitboxBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-toggleHitboxBtn.TextColor3 = Color3.fromRGB(255,255,255)
-toggleHitboxBtn.Font = Enum.Font.DenkOne
-toggleHitboxBtn.TextSize = 18
-toggleHitboxBtn.Text = "Enable Hitbox"
-Instance.new("UICorner", toggleHitboxBtn)
+-- Toggle Hitbox
+local toggleHitbox = Instance.new("TextButton", hitboxContent)
+toggleHitbox.Size = UDim2.new(0.9,0,0,30)
+toggleHitbox.Position = UDim2.new(0.05,0,0,50)
+toggleHitbox.BackgroundColor3 = Color3.fromRGB(0,0,0)
+toggleHitbox.TextColor3 = Color3.fromRGB(255,255,255)
+toggleHitbox.Font = Enum.Font.DenkOne
+toggleHitbox.TextSize = 18
+toggleHitbox.Text = "Enable Hitbox"
+Instance.new("UICorner", toggleHitbox)
 
--- Function to populate player list
+-- Update PlayerList
 local function updatePlayers()
-    playersList = {}
+    PlayerList = {}
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-            table.insert(playersList, p)
+            table.insert(PlayerList, p)
         end
     end
 end
@@ -180,29 +180,29 @@ updatePlayers()
 Players.PlayerAdded:Connect(updatePlayers)
 Players.PlayerRemoving:Connect(updatePlayers)
 
--- Update head size from TextBox
-textBox.FocusLost:Connect(function()
-    local size = tonumber(textBox.Text)
-    if size then
-        headSize = size
+-- Update HeadSize from TextBox
+headBox.FocusLost:Connect(function()
+    local sz = tonumber(headBox.Text)
+    if sz then
+        HeadSize = sz
     else
-        textBox.Text = tostring(headSize)
+        headBox.Text = tostring(HeadSize)
     end
 end)
 
 -- Toggle Hitbox
-toggleHitboxBtn.MouseButton1Click:Connect(function()
-    hitboxEnabled = not hitboxEnabled
-    toggleHitboxBtn.Text = hitboxEnabled and "Disable Hitbox" or "Enable Hitbox"
+toggleHitbox.MouseButton1Click:Connect(function()
+    HitboxEnabled = not HitboxEnabled
+    toggleHitbox.Text = HitboxEnabled and "Disable Hitbox" or "Enable Hitbox"
 end)
 
--- Apply hitbox
+-- Apply Hitbox
 RunService.RenderStepped:Connect(function()
-    if hitboxEnabled then
-        for _, p in pairs(playersList) do
+    if HitboxEnabled then
+        for _, p in pairs(PlayerList) do
             if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
                 local hrp = p.Character.HumanoidRootPart
-                hrp.Size = Vector3.new(headSize, headSize, headSize)
+                hrp.Size = Vector3.new(HeadSize,HeadSize,HeadSize)
                 hrp.BrickColor = BrickColor.new("Really blue")
                 hrp.Material = Enum.Material.Neon
                 hrp.CanCollide = false
@@ -210,124 +210,3 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
-
--- ================= ESP Tab Logic =================
-local ESPSettings = {Box=false,Outline=false,Name=false,Distance=false,Teammates=false}
-local ESPElements = {}
-
--- Function to create toggles in ESP tab
-local function createESPUI(parent)
-    local y = 10
-    for k,v in pairs({"Box","Outline","Name","Distance","Teammates"}) do
-        local btn = Instance.new("TextButton", parent)
-        btn.Size = UDim2.new(0.95,0,0,30)
-        btn.Position = UDim2.new(0.025,0,0,y)
-        btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-        btn.BackgroundTransparency = 0.5
-        btn.TextColor3 = Color3.fromRGB(255,255,255)
-        btn.Font = Enum.Font.DenkOne
-        btn.TextSize = 14
-        btn.Text = v.." OFF"
-        Instance.new("UICorner", btn)
-        btn.MouseButton1Click:Connect(function()
-            ESPSettings[v] = not ESPSettings[v]
-            btn.Text = v.." "..(ESPSettings[v] and "ON" or "OFF")
-        end)
-        table.insert(ESPElements, btn)
-        y = y + 40
-    end
-end
-
-createESPUI(espContent)
-
--- ESP Logic
-local ESP = {}
-local function shouldESP(p)
-    if p==LocalPlayer then return false end
-    if not ESPSettings.Teammates then
-        if LocalPlayer.Team and p.Team and LocalPlayer.Team==p.Team then return false end
-    end
-    return true
-end
-
-local function getColor(p)
-    return Color3.fromRGB(0,0,255) -- Really Blue
-end
-
-local function setupESP(p)
-    if ESP[p] then return end
-    local box = Instance.new("SelectionBox")
-    box.LineThickness = 0.05
-    box.SurfaceTransparency = 1
-    box.Parent = workspace
-
-    local hl = Instance.new("Highlight")
-    hl.FillTransparency = 1
-    hl.Parent = workspace
-
-    local bb = Instance.new("BillboardGui")
-    bb.Size = UDim2.new(0,200,0,40)
-    bb.StudsOffset = Vector3.new(0,3,0)
-    bb.AlwaysOnTop = true
-    bb.Parent = workspace
-
-    local txt = Instance.new("TextLabel", bb)
-    txt.Size = UDim2.new(1,0,1,0)
-    txt.BackgroundTransparency = 1
-    txt.Font = Enum.Font.Gotham
-    txt.TextSize = 13
-
-    ESP[p] = {Box=box,HL=hl,BB=bb,TXT=txt}
-end
-
-for _,p in pairs(Players:GetPlayers()) do
-    if p~=LocalPlayer then setupESP(p) end
-end
-Players.PlayerAdded:Connect(setupESP)
-Players.PlayerRemoving:Connect(function(p)
-    if ESP[p] then for _,v in pairs(ESP[p]) do v:Destroy() end ESP[p]=nil end
-end)
-
-RunService.RenderStepped:Connect(function()
-    for p,e in pairs(ESP) do
-        local c = p.Character
-        local hrp = c and c:FindFirstChild("HumanoidRootPart")
-        local hum = c and c:FindFirstChildOfClass("Humanoid")
-        local isVisible = hum and hum.Health>0 and hrp and c and shouldESP(p)
-        if isVisible then
-            local col = getColor(p)
-            e.Box.Color3 = col
-            e.HL.OutlineColor = col
-            e.TXT.TextColor3 = col
-
-            e.Box.Visible = ESPSettings.Box
-            e.Box.Adornee = ESPSettings.Box and c or nil
-
-            e.HL.Enabled = ESPSettings.Outline
-            e.HL.Adornee = ESPSettings.Outline and c or nil
-
-            local showBB = ESPSettings.Name or ESPSettings.Distance
-            e.BB.Enabled = showBB
-            e.BB.Adornee = showBB and hrp or nil
-
-            if showBB then
-                local t = ""
-                if ESPSettings.Name then t=p.Name end
-                if ESPSettings.Distance then
-                    local dist = math.floor((Camera.CFrame.Position-hrp.Position).Magnitude)
-                    if ESPSettings.Name then t=t.." ["..dist.." studs]" else t=dist.." studs" end
-                end
-                e.TXT.Text = t
-            end
-        else
-            e.Box.Visible=false
-            e.Box.Adornee=nil
-            e.HL.Enabled=false
-            e.HL.Adornee=nil
-            e.BB.Enabled=false
-            e.BB.Adornee=nil
-        end
-    end
-end)
-
-return LMG2L["ScreenGui"], require
