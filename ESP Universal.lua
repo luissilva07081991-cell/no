@@ -14,7 +14,7 @@ gui.ResetOnSpawn = false
 gui.Parent = LocalPlayer.PlayerGui
 
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.fromScale(0.65,0.55)
+main.Size = UDim2.fromScale(0.38,0.55) -- largura menor, altura igual
 main.Position = UDim2.fromScale(0.5,0.5)
 main.AnchorPoint = Vector2.new(0.5,0.5)
 main.BackgroundColor3 = Color3.fromRGB(20,20,20)
@@ -118,7 +118,7 @@ local function createToggle(parent,text,callback)
 	end)
 end
 
-local function createBox(parent,text)
+local function createBox(parent,text,default)
 	local frame = Instance.new("Frame", parent)
 	frame.Size = UDim2.new(1,-40,0,55)
 	frame.Position = UDim2.new(0,20,0,0)
@@ -137,7 +137,7 @@ local function createBox(parent,text)
 	box.Position = UDim2.new(0.68,0,0.15,0)
 	box.BackgroundColor3 = Color3.fromRGB(50,50,50)
 	box.TextColor3 = Color3.new(1,1,1)
-	box.Text = ""
+	box.Text = default or ""
 	box.ClearTextOnFocus=false
 	Instance.new("UICorner", box).CornerRadius = UDim.new(0,8)
 
@@ -153,42 +153,62 @@ local espPage = createTab("ESP")
 hitboxPage.Visible = true
 
 -------------------------------------------------
--- HITBOX
+-- HITBOX (novo script)
 -------------------------------------------------
 
-local hitboxEnabled=false
-local hitboxSize=5
-local hitboxTrans=0.5
+local HeadSize = 10
+local hitboxEnabled = false
+local playersList = {}
 
-local function applyHitbox(char)
-	for _,p in pairs(char:GetChildren()) do
-		if p:IsA("BasePart") and p.Name=="HumanoidRootPart" then
-			p.Size = Vector3.new(hitboxSize,hitboxSize,hitboxSize)
-			p.Transparency = hitboxTrans
-			p.CanCollide=false
+-- Input box para tamanho
+local sizeBox = createBox(hitboxPage,"Tamanho do Hitbox",tostring(HeadSize))
+sizeBox.FocusLost:Connect(function()
+	local val = tonumber(sizeBox.Text)
+	if val then HeadSize = val end
+end)
+
+-- Botão ON/OFF Hitbox
+local hitboxBtn = Instance.new("TextButton", hitboxPage)
+hitboxBtn.Size = UDim2.new(0.5,0,0,40)
+hitboxBtn.Position = UDim2.new(0.25,0,0.4,0)
+hitboxBtn.Text = "Enable Hitbox"
+hitboxBtn.Font = Enum.Font.GothamBold
+hitboxBtn.TextColor3 = Color3.new(1,1,1)
+hitboxBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+Instance.new("UICorner", hitboxBtn).CornerRadius = UDim.new(0,12)
+
+hitboxBtn.MouseButton1Click:Connect(function()
+	hitboxEnabled = not hitboxEnabled
+	hitboxBtn.Text = hitboxEnabled and "Disable Hitbox" or "Enable Hitbox"
+end)
+
+-- Atualiza lista de players
+local function updatePlayers()
+	playersList = {}
+	for _,plr in pairs(Players:GetPlayers()) do
+		if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+			table.insert(playersList,plr)
 		end
 	end
 end
 
-createToggle(hitboxPage,"Ativar Hitbox",function(state)
-	hitboxEnabled=state
-end)
+Players.PlayerAdded:Connect(updatePlayers)
+Players.PlayerRemoving:Connect(updatePlayers)
+RunService.RenderStepped:Connect(updatePlayers)
 
-local sizeBox = createBox(hitboxPage,"Tamanho")
-sizeBox.FocusLost:Connect(function()
-	local v=tonumber(sizeBox.Text)
-	if v then hitboxSize=v end
-end)
-
-local transBox = createBox(hitboxPage,"Transparência (0-1)")
-transBox.FocusLost:Connect(function()
-	local v=tonumber(transBox.Text)
-	if v then hitboxTrans=v end
-end)
-
+-- Aplicar hitbox
 RunService.RenderStepped:Connect(function()
-	if hitboxEnabled and LocalPlayer.Character then
-		applyHitbox(LocalPlayer.Character)
+	if hitboxEnabled then
+		for _,plr in pairs(playersList) do
+			if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+				local root = plr.Character.HumanoidRootPart
+				root.Size = Vector3.new(HeadSize,HeadSize,HeadSize)
+				root.Transparency = 0
+				root.BrickColor = BrickColor.new("Medium stone grey")
+				root.Material = Enum.Material.Plastic
+				root.CanCollide = true
+			end
+		end
 	end
 end)
 
@@ -220,7 +240,7 @@ local function createESP(plr,char)
 	highlights[plr]=h
 end
 
-createToggle(espPage,"Ativar ESP",function(state)
+local espToggle = createToggle(espPage,"Ativar ESP",function(state)
 	espEnabled=state
 	if not state then
 		for p in pairs(highlights) do removeESP(p) end
