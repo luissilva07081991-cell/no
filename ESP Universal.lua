@@ -1,217 +1,211 @@
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
+--[=[
+ d888b  db    db d888888b      .d888b.      db      db    db  .d8b.  
+88' Y8b 88    88   `88'        VP  `8D      88      88    88 d8' `8b 
+88      88    88    88            odD'      88      88    88 88ooo88 
+88  ooo 88    88    88          .88'        88      88    88 88~~~88 
+88. ~8~ 88b  d88   .88.        j88.         88booo. 88b  d88 88   88    @uniquadev
+ Y888P  ~Y8888P' Y888888P      888888D      Y88888P ~Y8888P' YP   YP  CONVERTER 
 
--- CONFIG
-local MAX_DISTANCE = 150
-local ESP_ATIVO = true
-local SHOW_NICK = false
-local highlights = {}
-local nameTags = {}
+designed using localmaze gui creator
+]=]
 
--- UTIL
-local function getRoot(char)
-	return char and char:FindFirstChild("HumanoidRootPart")
-end
+-- Instances: 20 | Scripts: 1 | Modules: 0 | Tags: 0
+local LMG2L = {};
 
-local function removeESP(player)
-	if highlights[player] then highlights[player]:Destroy() highlights[player] = nil end
-	if nameTags[player] then nameTags[player]:Destroy() nameTags[player] = nil end
-end
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui
+LMG2L["ScreenGui_1"] = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"));
+LMG2L["ScreenGui_1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
 
-local function createESP(player, character)
-	if not ESP_ATIVO or player == LocalPlayer or not character then return end
-	removeESP(player)
 
-	local h = Instance.new("Highlight")
-	h.Name = "ESPHighlight"
-	h.Adornee = character
-	h.Parent = character
-	h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-	h.FillTransparency = 0.35
-	h.FillColor = Color3.fromRGB(0,170,255)
-	h.OutlineColor = Color3.fromRGB(0,170,255)
-	highlights[player] = h
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame
+LMG2L["MainFrame_2"] = Instance.new("Frame", LMG2L["ScreenGui_1"]);
+LMG2L["MainFrame_2"]["BorderSizePixel"] = 0;
+LMG2L["MainFrame_2"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+LMG2L["MainFrame_2"]["Size"] = UDim2.new(0.32059, 0, 0.56651, 0);
+LMG2L["MainFrame_2"]["Position"] = UDim2.new(0.33971, 0, 0.15649, 0);
+LMG2L["MainFrame_2"]["Name"] = [[MainFrame]];
 
-	if SHOW_NICK then
-		local root = getRoot(character)
-		if root then
-			local bill = Instance.new("BillboardGui")
-			bill.Name = "NickTag"
-			bill.Adornee = root
-			bill.Size = UDim2.new(0,120,0,25)
-			bill.StudsOffset = Vector3.new(0,3,0)
-			bill.AlwaysOnTop = true
 
-			local text = Instance.new("TextLabel")
-			text.Text = player.Name
-			text.Size = UDim2.new(1,0,1,0)
-			text.BackgroundTransparency = 1
-			text.TextColor3 = Color3.new(1,1,1)
-			text.TextScaled = true
-			text.Font = Enum.Font.GothamBold
-			text.Parent = bill
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.UICorner
+LMG2L["UICorner_3"] = Instance.new("UICorner", LMG2L["MainFrame_2"]);
 
-			bill.Parent = gui
-			nameTags[player] = bill
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.Header
+LMG2L["Header_4"] = Instance.new("Frame", LMG2L["MainFrame_2"]);
+LMG2L["Header_4"]["BorderSizePixel"] = 0;
+LMG2L["Header_4"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+LMG2L["Header_4"]["Size"] = UDim2.new(1, 0, 0.14917, 0);
+LMG2L["Header_4"]["Name"] = [[Header]];
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.Header.UICorner
+LMG2L["UICorner_5"] = Instance.new("UICorner", LMG2L["Header_4"]);
+
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.Header.Frame
+LMG2L["Frame_6"] = Instance.new("Frame", LMG2L["Header_4"]);
+LMG2L["Frame_6"]["BorderSizePixel"] = 0;
+LMG2L["Frame_6"]["BackgroundColor3"] = Color3.fromRGB(84, 84, 84);
+LMG2L["Frame_6"]["Size"] = UDim2.new(0.9633, 0, 0.77778, 0);
+LMG2L["Frame_6"]["Position"] = UDim2.new(0.01835, 0, 0.11111, 0);
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.Header.Frame.UICorner
+LMG2L["UICorner_7"] = Instance.new("UICorner", LMG2L["Frame_6"]);
+
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.Header.Frame.Title
+LMG2L["Title_8"] = Instance.new("TextLabel", LMG2L["Frame_6"]);
+LMG2L["Title_8"]["BorderSizePixel"] = 0;
+LMG2L["Title_8"]["TextSize"] = 30;
+LMG2L["Title_8"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+LMG2L["Title_8"]["FontFace"] = Font.new([[rbxasset://fonts/families/DenkOne.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+LMG2L["Title_8"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+LMG2L["Title_8"]["BackgroundTransparency"] = 1;
+LMG2L["Title_8"]["Size"] = UDim2.new(0.39524, 0, 1, 0);
+LMG2L["Title_8"]["Text"] = [[Universal Hub]];
+LMG2L["Title_8"]["Name"] = [[Title]];
+LMG2L["Title_8"]["Position"] = UDim2.new(0.01429, 0, 0, 0);
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.Header.TextButton
+LMG2L["TextButton_9"] = Instance.new("TextButton", LMG2L["Header_4"]);
+LMG2L["TextButton_9"]["BorderSizePixel"] = 0;
+LMG2L["TextButton_9"]["TextSize"] = 35;
+LMG2L["TextButton_9"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+LMG2L["TextButton_9"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+LMG2L["TextButton_9"]["BackgroundTransparency"] = 0.8;
+LMG2L["TextButton_9"]["Size"] = UDim2.new(0.13303, 0, 0.7037, 0);
+LMG2L["TextButton_9"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+LMG2L["TextButton_9"]["Text"] = [[-]];
+LMG2L["TextButton_9"]["Position"] = UDim2.new(0.83945, 0, 0.14815, 0);
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.Header.TextButton.UICorner
+LMG2L["UICorner_a"] = Instance.new("UICorner", LMG2L["TextButton_9"]);
+
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.Frame
+LMG2L["Frame_b"] = Instance.new("Frame", LMG2L["MainFrame_2"]);
+LMG2L["Frame_b"]["BorderSizePixel"] = 0;
+LMG2L["Frame_b"]["BackgroundColor3"] = Color3.fromRGB(84, 84, 84);
+LMG2L["Frame_b"]["Size"] = UDim2.new(0.3211, 0, 0.79006, 0);
+LMG2L["Frame_b"]["Position"] = UDim2.new(0.02294, 0, 0.16575, 0);
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.Frame.UICorner
+LMG2L["UICorner_c"] = Instance.new("UICorner", LMG2L["Frame_b"]);
+
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.Frame.TextButton
+LMG2L["TextButton_d"] = Instance.new("TextButton", LMG2L["Frame_b"]);
+LMG2L["TextButton_d"]["BorderSizePixel"] = 0;
+LMG2L["TextButton_d"]["TextSize"] = 30;
+LMG2L["TextButton_d"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+LMG2L["TextButton_d"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+LMG2L["TextButton_d"]["FontFace"] = Font.new([[rbxasset://fonts/families/DenkOne.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+LMG2L["TextButton_d"]["BackgroundTransparency"] = 0.8;
+LMG2L["TextButton_d"]["Size"] = UDim2.new(0.87143, 0, 0.16084, 0);
+LMG2L["TextButton_d"]["Text"] = [[Hitbox]];
+LMG2L["TextButton_d"]["Position"] = UDim2.new(0.07143, 0, 0.02797, 0);
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.Frame.TextButton.UICorner
+LMG2L["UICorner_e"] = Instance.new("UICorner", LMG2L["TextButton_d"]);
+
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.Frame.TextButton
+LMG2L["TextButton_f"] = Instance.new("TextButton", LMG2L["Frame_b"]);
+LMG2L["TextButton_f"]["BorderSizePixel"] = 0;
+LMG2L["TextButton_f"]["TextSize"] = 30;
+LMG2L["TextButton_f"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+LMG2L["TextButton_f"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+LMG2L["TextButton_f"]["FontFace"] = Font.new([[rbxasset://fonts/families/DenkOne.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+LMG2L["TextButton_f"]["BackgroundTransparency"] = 0.8;
+LMG2L["TextButton_f"]["Size"] = UDim2.new(0.87143, 0, 0.16084, 0);
+LMG2L["TextButton_f"]["Text"] = [[ESP]];
+LMG2L["TextButton_f"]["Position"] = UDim2.new(0.07143, 0, 0.22378, 0);
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.Frame.TextButton.UICorner
+LMG2L["UICorner_10"] = Instance.new("UICorner", LMG2L["TextButton_f"]);
+
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.Frame
+LMG2L["Frame_11"] = Instance.new("Frame", LMG2L["MainFrame_2"]);
+LMG2L["Frame_11"]["BorderSizePixel"] = 0;
+LMG2L["Frame_11"]["BackgroundColor3"] = Color3.fromRGB(84, 84, 84);
+LMG2L["Frame_11"]["Size"] = UDim2.new(0.61468, 0, 0.79006, 0);
+LMG2L["Frame_11"]["Position"] = UDim2.new(0.36697, 0, 0.16575, 0);
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.Frame.UICorner
+LMG2L["UICorner_12"] = Instance.new("UICorner", LMG2L["Frame_11"]);
+
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.MainFrame.UIAspectRatioConstraint
+LMG2L["UIAspectRatioConstraint_13"] = Instance.new("UIAspectRatioConstraint", LMG2L["MainFrame_2"]);
+LMG2L["UIAspectRatioConstraint_13"]["AspectRatio"] = 1.20442;
+
+
+-- Players.DJ_WESLEYGONSAGA.PlayerGui.ScreenGui.LocalScript
+LMG2L["LocalScript_14"] = Instance.new("LocalScript", LMG2L["ScreenGui_1"]);
+
+--====================== FUNCIONALIDADE DE MINIMIZAR/ABRIR ======================--
+
+local function C_14()
+	local script = LMG2L["LocalScript_14"]
+	local TweenService = game:GetService("TweenService")
+	local mainFrame = script.Parent:WaitForChild("MainFrame")
+	local header = mainFrame:WaitForChild("Header")
+	local toggleButton = header:WaitForChild("TextButton")
+	
+	local originalPosition = mainFrame.Position
+	local minimizedPosition = UDim2.new(originalPosition.X.Scale, originalPosition.X.Offset, 0, 0) -- sobe para topo
+	local tweenTime = 0.5
+
+	local function minimize()
+		local tween = TweenService:Create(mainFrame, TweenInfo.new(tweenTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = minimizedPosition})
+		tween:Play()
+		tween.Completed:Wait()
+
+		for _, child in pairs(mainFrame:GetChildren()) do
+			if child ~= header then
+				child.Visible = false
+			end
 		end
-	end
-end
 
-local function setupPlayer(player)
-	if player == LocalPlayer then return end
-	player.CharacterAdded:Connect(function(char)
-		if ESP_ATIVO then createESP(player, char) end
+		toggleButton.Text = "+"
+	end
+
+	local function restore()
+		for _, child in pairs(mainFrame:GetChildren()) do
+			child.Visible = true
+		end
+
+		local tween = TweenService:Create(mainFrame, TweenInfo.new(tweenTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = originalPosition})
+		tween:Play()
+
+		toggleButton.Text = "-"
+	end
+
+	toggleButton.MouseButton1Click:Connect(function()
+		if toggleButton.Text == "-" then
+			minimize()
+		else
+			restore()
+		end
 	end)
-	if player.Character then createESP(player, player.Character) end
 end
 
--- GUI HUB
-local gui = Instance.new("ScreenGui")
-gui.ResetOnSpawn = false
-gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+task.spawn(C_14)
 
--- FRAME PRINCIPAL
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0,220,0,250)
-frame.Position = UDim2.new(0,20,0,50)
-frame.BackgroundColor3 = Color3.fromRGB(40,40,40)
-frame.BorderSizePixel = 0
-frame.Active = true
-frame.Draggable = true
-frame.Parent = gui
-
--- ABAS
-local espTabButton = Instance.new("TextButton")
-espTabButton.Size = UDim2.new(0,100,0,30)
-espTabButton.Position = UDim2.new(0,10,0,10)
-espTabButton.BackgroundColor3 = Color3.fromRGB(0,120,255)
-espTabButton.TextColor3 = Color3.new(1,1,1)
-espTabButton.TextScaled = true
-espTabButton.Font = Enum.Font.GothamBold
-espTabButton.Text = "ESP"
-espTabButton.Parent = frame
-
-local tabFrame = Instance.new("Frame")
-tabFrame.Size = UDim2.new(0,200,0,180)
-tabFrame.Position = UDim2.new(0,10,0,50)
-tabFrame.BackgroundColor3 = Color3.fromRGB(30,30,30)
-tabFrame.BorderSizePixel = 0
-tabFrame.Parent = frame
-
--- FUNÇÃO CRIAR BOTÃO
-local function createButton(text, posY, callback)
-	local btn = Instance.new("TextButton")
-	btn.Size = UDim2.new(0,180,0,30)
-	btn.Position = UDim2.new(0,10,posY,0)
-	btn.BackgroundColor3 = Color3.fromRGB(0,120,255)
-	btn.TextColor3 = Color3.new(1,1,1)
-	btn.TextScaled = true
-	btn.Font = Enum.Font.GothamBold
-	btn.Text = text
-	btn.Parent = tabFrame
-	btn.MouseButton1Click:Connect(callback)
-	return btn
-end
-
--- BOTÕES ABA ESP
-local btnESP = createButton("ESP ON", 10, function()
-	ESP_ATIVO = not ESP_ATIVO
-	btnESP.Text = ESP_ATIVO and "ESP ON" or "ESP OFF"
-	if not ESP_ATIVO then
-		for _, h in pairs(highlights) do h:Destroy() end
-		for _, t in pairs(nameTags) do t:Destroy() end
-		highlights = {}
-		nameTags = {}
-	end
-end)
-
-local btnNick = createButton("Nick OFF", 60, function()
-	SHOW_NICK = not SHOW_NICK
-	btnNick.Text = SHOW_NICK and "Nick ON" or "Nick OFF"
-	if not SHOW_NICK then
-		for _, t in pairs(nameTags) do t:Destroy() end
-		nameTags = {}
-	end
-end)
-
--- BOTÃO MINIMIZAR
-local btnMin = Instance.new("TextButton")
-btnMin.Size = UDim2.new(0,50,0,25)
-btnMin.Position = UDim2.new(1,-55,0,10)
-btnMin.AnchorPoint = Vector2.new(1,0)
-btnMin.BackgroundColor3 = Color3.fromRGB(200,0,0)
-btnMin.TextColor3 = Color3.new(1,1,1)
-btnMin.TextScaled = true
-btnMin.Font = Enum.Font.GothamBold
-btnMin.Text = "-"
-btnMin.Parent = frame
-
-local btnOpen = Instance.new("TextButton")
-btnOpen.Size = UDim2.new(0,50,0,25)
-btnOpen.Position = UDim2.new(0,20,0,50)
-btnOpen.BackgroundColor3 = Color3.fromRGB(0,200,0)
-btnOpen.TextColor3 = Color3.new(1,1,1)
-btnOpen.TextScaled = true
-btnOpen.Font = Enum.Font.GothamBold
-btnOpen.Text = "Open"
-btnOpen.Visible = false
-btnOpen.Parent = gui
-
--- EVENTOS MINIMIZAR / ABRIR
-btnMin.MouseButton1Click:Connect(function()
-	frame.Visible = false
-	btnOpen.Visible = true
-end)
-
-btnOpen.MouseButton1Click:Connect(function()
-	frame.Visible = true
-	btnOpen.Visible = false
-end)
-
--- LOOP INQUEBRÁVEL ESP
-RunService.RenderStepped:Connect(function()
-	local myChar = LocalPlayer.Character
-	local myRoot = getRoot(myChar)
-	if not myRoot then return end
-
-	for _, player in ipairs(Players:GetPlayers()) do
-		if player ~= LocalPlayer and player.Character then
-			local root = getRoot(player.Character)
-			if root then
-				local dist = (myRoot.Position - root.Position).Magnitude
-				if dist <= MAX_DISTANCE then
-					if not highlights[player] or highlights[player].Parent ~= player.Character then
-						createESP(player, player.Character)
-					end
-				else
-					removeESP(player)
-				end
-			end
-		end
-	end
-end)
-
--- Players
-Players.PlayerAdded:Connect(setupPlayer)
-Players.PlayerRemoving:Connect(removeESP)
-for _, p in ipairs(Players:GetPlayers()) do setupPlayer(p) end
-
--- Watchdog extra
-spawn(function()
-	while true do
-		for player, h in pairs(highlights) do
-			if not player.Character or not h or h.Parent ~= player.Character then
-				if player.Character then createESP(player, player.Character) end
-			end
-		end
-		if SHOW_NICK then
-			for player, tag in pairs(nameTags) do
-				if not player.Character or not tag or tag.Parent ~= gui then
-					if player.Character then createESP(player, player.Character) end
-				end
-			end
-		end
-		wait(0.5)
-	end
-end)
+return LMG2L["ScreenGui_1"], require;
