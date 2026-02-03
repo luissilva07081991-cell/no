@@ -1,4 +1,4 @@
---[[ Universal Hub LMG2L - Completo com ESP e Hitbox original integrado ]]--
+--[[ Universal Hub LMG2L - Completo com Hitbox e ESP funcionando ]]--
 
 local LMG2L = {}
 
@@ -270,6 +270,126 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- ================= ESP =================
--- (Seu ESP original aqui)
+local ESPSettings = {Box=false,Outline=false,Name=false,Distance=false,Teammates=false}
+local ESPElements = {}
+local ESP = {}
+
+-- Function to create toggles in ESP tab
+local function createESPUI(parent)
+    local y = 10
+    for k,v in pairs({"Box","Outline","Name","Distance","Teammates"}) do
+        local btn = Instance.new("TextButton", parent)
+        btn.Size = UDim2.new(0.95,0,0,30)
+        btn.Position = UDim2.new(0.025,0,0, y)
+        btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+        btn.BackgroundTransparency = 0.5
+        btn.TextColor3 = Color3.fromRGB(255,255,255)
+        btn.Font = Enum.Font.DenkOne
+        btn.TextSize = 14
+        btn.Text = v.." OFF"
+        Instance.new("UICorner", btn)
+        btn.MouseButton1Click:Connect(function()
+            ESPSettings[v] = not ESPSettings[v]
+            btn.Text = v.." "..(ESPSettings[v] and "ON" or "OFF")
+        end)
+        table.insert(ESPElements, btn)
+        y = y + 40
+    end
+end
+
+createESPUI(espContent)
+
+-- Function to determine if player should have ESP
+local function shouldESP(p)
+    if p==LocalPlayer then return false end
+    if not ESPSettings.Teammates then
+        if LocalPlayer.Team and p.Team and LocalPlayer.Team==p.Team then return false end
+    end
+    return true
+end
+
+local function getColor(p)
+    return Color3.fromRGB(0,0,255) -- Really Blue
+end
+
+local function setupESP(p)
+    if ESP[p] then return end
+
+    local box = Instance.new("SelectionBox")
+    box.LineThickness = 0.05
+    box.SurfaceTransparency = 1
+    box.Adornee = nil
+    box.Parent = workspace
+
+    local hl = Instance.new("Highlight")
+    hl.FillTransparency = 1
+    hl.Adornee = nil
+    hl.Parent = workspace
+
+    local bb = Instance.new("BillboardGui")
+    bb.Size = UDim2.new(0,200,0,40)
+    bb.StudsOffset = Vector3.new(0,3,0)
+    bb.AlwaysOnTop = true
+    bb.Adornee = nil
+    bb.Parent = workspace
+
+    local txt = Instance.new("TextLabel", bb)
+    txt.Size = UDim2.new(1,0,1,0)
+    txt.BackgroundTransparency = 1
+    txt.Font = Enum.Font.Gotham
+    txt.TextSize = 13
+
+    ESP[p] = {Box=box,HL=hl,BB=bb,TXT=txt}
+end
+
+for _,p in pairs(Players:GetPlayers()) do
+    if p~=LocalPlayer then setupESP(p) end
+end
+Players.PlayerAdded:Connect(setupESP)
+Players.PlayerRemoving:Connect(function(p)
+    if ESP[p] then for _,v in pairs(ESP[p]) do v:Destroy() end ESP[p]=nil end
+end)
+
+RunService.RenderStepped:Connect(function()
+    for p,e in pairs(ESP) do
+        local c = p.Character
+        local hrp = c and c:FindFirstChild("HumanoidRootPart")
+        local hum = c and c:FindFirstChildOfClass("Humanoid")
+        local isVisible = hum and hum.Health>0 and hrp and shouldESP(p)
+        if isVisible then
+            local col = getColor(p)
+            e.Box.Color3 = col
+            e.HL.OutlineColor = col
+            e.TXT.TextColor3 = col
+
+            e.Box.Visible = ESPSettings.Box
+            e.Box.Adornee = ESPSettings.Box and c or nil
+
+            e.HL.Enabled = ESPSettings.Outline
+            e.HL.Adornee = ESPSettings.Outline and c or nil
+
+            local showBB = ESPSettings.Name or ESPSettings.Distance
+            e.BB.Enabled = showBB
+            e.BB.Adornee = showBB and hrp or nil
+
+            if showBB then
+                local t = ""
+                if ESPSettings.Name then t=p.Name end
+                if ESPSettings.Distance then
+                    local dist = math.floor((Camera.CFrame.Position-hrp.Position).Magnitude)
+                    if ESPSettings.Name then t=t.." ["..dist.." studs]" else t=dist.." studs" end
+                end
+                e.TXT.Text = t
+            end
+        else
+            e.Box.Visible=false
+            e.Box.Adornee=nil
+            e.HL.Enabled=false
+            e.HL.Adornee=nil
+            e.BB.Enabled=false
+            e.BB.Adornee=nil
+        end
+    end
+end)
 
 return screenGui
