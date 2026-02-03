@@ -1,4 +1,4 @@
---[[ Universal Hub LMG2L - Completo com Hitbox e ESP funcionando ]]--
+--[[ Universal Hub LMG2L - Completo com Hitbox, ESP e Player ]]--
 
 local LMG2L = {}
 
@@ -7,6 +7,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
+local UserInputService = game:GetService("UserInputService")
 
 --// ScreenGui
 local function criarScreenGui()
@@ -110,6 +111,19 @@ espBtn.Font = Enum.Font.DenkOne
 espBtn.TextSize = 30
 Instance.new("UICorner", espBtn)
 
+-- === Player Tab Button ===
+local playerBtn = leftFrame:FindFirstChild("PlayerBtn") or Instance.new("TextButton", leftFrame)
+playerBtn.Name = "PlayerBtn"
+playerBtn.Size = UDim2.new(0.87,0,0.16,0)
+playerBtn.Position = UDim2.new(0.07,0,0.41,0)
+playerBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+playerBtn.BackgroundTransparency = 0.8
+playerBtn.TextColor3 = Color3.fromRGB(255,255,255)
+playerBtn.Text = "Player"
+playerBtn.Font = Enum.Font.DenkOne
+playerBtn.TextSize = 30
+Instance.new("UICorner", playerBtn)
+
 -- Right Frame (Tab content)
 local rightFrame = main:FindFirstChild("RightFrame") or Instance.new("Frame", main)
 rightFrame.Name = "RightFrame"
@@ -132,14 +146,27 @@ espContent.Size = UDim2.new(1,0,1,0)
 espContent.BackgroundTransparency = 1
 espContent.Visible = false
 
+local playerContent = rightFrame:FindFirstChild("PlayerContent") or Instance.new("Frame", rightFrame)
+playerContent.Name = "PlayerContent"
+playerContent.Size = UDim2.new(1,0,1,0)
+playerContent.BackgroundTransparency = 1
+playerContent.Visible = false
+
 -- Button logic to switch tabs
 hitboxBtn.MouseButton1Click:Connect(function()
     hitboxContent.Visible = true
     espContent.Visible = false
+    playerContent.Visible = false
 end)
 espBtn.MouseButton1Click:Connect(function()
     hitboxContent.Visible = false
     espContent.Visible = true
+    playerContent.Visible = false
+end)
+playerBtn.MouseButton1Click:Connect(function()
+    hitboxContent.Visible = false
+    espContent.Visible = false
+    playerContent.Visible = true
 end)
 
 -- Minimize/Restore Button "+"
@@ -363,10 +390,10 @@ RunService.RenderStepped:Connect(function()
             e.TXT.TextColor3 = col
 
             e.Box.Visible = ESPSettings.Box
-            e.Box.Adornee = ESPSettings.Box and c or nil
+            e.Box.Adornee = ESPSettings.Box and hrp or nil
 
             e.HL.Enabled = ESPSettings.Outline
-            e.HL.Adornee = ESPSettings.Outline and c or nil
+            e.HL.Adornee = ESPSettings.Outline and hrp or nil
 
             local showBB = ESPSettings.Name or ESPSettings.Distance
             e.BB.Enabled = showBB
@@ -392,4 +419,10 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
-return screenGui
+--================= Player Scripts =================
+-- Speed
+local speedValue = 50
+local speedEnabled = false
+
+local speedBox = Instance.new("TextBox")
+speedBox.Size = UDim2.new(0.4,
