@@ -1,43 +1,35 @@
 --[[ Universal Hub LMG2L - Completo com Hitbox, ESP e Player ]]--
 
-local LMG2L = {}
-
---// Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
-local UserInputService = game:GetService("UserInputService")
 
---// ScreenGui
-local function criarScreenGui()
-    local gui = Instance.new("ScreenGui")
-    gui.Name = "UniversalHub"
-    gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    gui.ResetOnSpawn = false
-    gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
-    return gui
+--==================== GUI ====================--
+local screenGui = LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("UniversalHub")
+if not screenGui then
+    screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "UniversalHub"
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 end
 
-LMG2L["ScreenGui"] = LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("UniversalHub") or criarScreenGui()
-local screenGui = LMG2L["ScreenGui"]
-
---// MainFrame
-local function criarMainFrame()
-    local frame = Instance.new("Frame")
-    frame.Name = "MainFrame"
-    frame.Size = UDim2.new(0.32,0,0.56,0)
-    frame.Position = UDim2.new(0.34,0,0.15,0)
-    frame.BackgroundColor3 = Color3.fromRGB(0,0,0)
-    frame.BorderSizePixel = 0
-    Instance.new("UICorner", frame)
-    frame.Parent = screenGui
-    return frame
+-- Main frame
+local main = screenGui:FindFirstChild("MainFrame")
+if not main then
+    main = Instance.new("Frame")
+    main.Name = "MainFrame"
+    main.Size = UDim2.new(0.32,0,0.56,0)
+    main.Position = UDim2.new(0.34,0,0.15,0)
+    main.BackgroundColor3 = Color3.fromRGB(0,0,0)
+    main.BorderSizePixel = 0
+    Instance.new("UICorner", main)
+    main.Parent = screenGui
 end
 
-local main = screenGui:FindFirstChild("MainFrame") or criarMainFrame()
-
---// Header
+-- Header
 local header = main:FindFirstChild("Header") or Instance.new("Frame", main)
 header.Name = "Header"
 header.Size = UDim2.new(1,0,0.15,0)
@@ -114,7 +106,7 @@ playerContent.Size = UDim2.new(1,0,1,0)
 playerContent.BackgroundTransparency = 1
 playerContent.Visible = false
 
--- Tabs buttons
+-- Helper function to create tab buttons
 local function criarBotao(nome, posY)
     local btn = Instance.new("TextButton", leftFrame)
     btn.Size = UDim2.new(0.87,0,0.16,0)
@@ -129,11 +121,11 @@ local function criarBotao(nome, posY)
     return btn
 end
 
-local hitboxBtn = criarBotao("Hitbox", 0.03)
-local espBtn = criarBotao("ESP", 0.22)
-local playerBtn = criarBotao("Player", 0.41)
+local hitboxBtn = criarBotao("Hitbox",0.03)
+local espBtn = criarBotao("ESP",0.22)
+local playerBtn = criarBotao("Player",0.41)
 
--- Button logic to switch tabs
+-- Switch tabs
 hitboxBtn.MouseButton1Click:Connect(function()
     hitboxContent.Visible = true
     espContent.Visible = false
@@ -150,7 +142,7 @@ playerBtn.MouseButton1Click:Connect(function()
     playerContent.Visible = true
 end)
 
--- Minimize/Restore Button "+"
+-- Minimize/Restore Button
 local openBtn
 local function criarOpenBtn()
     if openBtn and openBtn.Parent then return end
@@ -164,38 +156,206 @@ local function criarOpenBtn()
     openBtn.Visible = false
     openBtn.Font = Enum.Font.SourceSansBold
     openBtn.TextScaled = true
-
     openBtn.MouseButton1Click:Connect(function()
         main.Visible = true
         openBtn.Visible = false
     end)
 end
-
 criarOpenBtn()
-
 toggleBtn.MouseButton1Click:Connect(function()
     main.Visible = false
     openBtn.Visible = true
 end)
 
-LocalPlayer.CharacterAdded:Connect(function()
-    task.wait(0.1)
-    criarOpenBtn()
+--==================== Hitbox ====================--
+-- Configurações iniciais
+local _G_HeadSize = 10
+local _G_Disabled = true
+local playersList = {}
+
+-- TextBox Hitbox
+local sizeBox = Instance.new("TextBox")
+sizeBox.Size = UDim2.new(0.4,0,0,30)
+sizeBox.Position = UDim2.new(0.05,0,0,10)
+sizeBox.Text = tostring(_G_HeadSize)
+sizeBox.BackgroundColor3 = Color3.fromRGB(0,0,0)
+sizeBox.BackgroundTransparency = 0.2
+sizeBox.TextColor3 = Color3.fromRGB(255,255,255)
+sizeBox.Font = Enum.Font.DenkOne
+sizeBox.TextSize = 18
+Instance.new("UICorner", sizeBox)
+sizeBox.Parent = hitboxContent
+
+local hitboxBtn2 = Instance.new("TextButton")
+hitboxBtn2.Size = UDim2.new(0.9,0,0,50)
+hitboxBtn2.Position = UDim2.new(0.05,0,0,60)
+hitboxBtn2.BackgroundColor3 = Color3.fromRGB(0,0,0)
+hitboxBtn2.BackgroundTransparency = 0.2
+hitboxBtn2.TextColor3 = Color3.fromRGB(255,255,255)
+hitboxBtn2.Font = Enum.Font.GothamBold
+hitboxBtn2.TextSize = 20
+hitboxBtn2.Text = "Enable Hitbox"
+Instance.new("UICorner", hitboxBtn2)
+hitboxBtn2.Parent = hitboxContent
+
+-- Toggle Hitbox
+hitboxBtn2.MouseButton1Click:Connect(function()
+    _G_Disabled = not _G_Disabled
+    hitboxBtn2.Text = _G_Disabled and "Enable Hitbox" or "Disable Hitbox"
 end)
 
--- ================= Hitbox =================
--- [Código Hitbox original aqui, igual ao que você enviou, já funcional]
--- Lembre-se de usar hrp como adornee para ESP/Hitbox
+-- Atualiza tamanho
+sizeBox.FocusLost:Connect(function()
+    local size = tonumber(sizeBox.Text)
+    if size then _G_HeadSize = size else sizeBox.Text = tostring(_G_HeadSize) end
+end)
 
--- ================= ESP =================
--- [Código ESP original aqui, já funcional, corrigindo adornee para hrp]
+local function resetHitbox(plr)
+    if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+        local part = plr.Character.HumanoidRootPart
+        part.Size = Vector3.new(2,2,1)
+        part.Transparency = 0
+        part.BrickColor = BrickColor.new("Medium stone grey")
+        part.Material = Enum.Material.Plastic
+        part.CanCollide = true
+    end
+end
 
--- ================= Player Scripts =================
+RunService.RenderStepped:Connect(function()
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            local part = plr.Character.HumanoidRootPart
+            if not _G_Disabled then
+                part.Size = Vector3.new(_G_HeadSize,_G_HeadSize,_G_HeadSize)
+                part.Transparency = 0.8
+                part.BrickColor = BrickColor.new("Really blue")
+                part.Material = Enum.Material.Neon
+                part.CanCollide = false
+            else
+                resetHitbox(plr)
+            end
+        end
+    end
+end)
+
+--==================== ESP ====================--
+local ESPSettings = {Box=false,Outline=false,Name=false,Distance=false,Teammates=false}
+local ESP = {}
+
+-- Criar toggles ESP
+local function createESPUI(parent)
+    local y = 10
+    for k,v in pairs({"Box","Outline","Name","Distance","Teammates"}) do
+        local btn = Instance.new("TextButton", parent)
+        btn.Size = UDim2.new(0.95,0,0,30)
+        btn.Position = UDim2.new(0.025,0,0,y)
+        btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+        btn.BackgroundTransparency = 0.5
+        btn.TextColor3 = Color3.fromRGB(255,255,255)
+        btn.Font = Enum.Font.DenkOne
+        btn.TextSize = 14
+        btn.Text = v.." OFF"
+        Instance.new("UICorner", btn)
+        btn.MouseButton1Click:Connect(function()
+            ESPSettings[v] = not ESPSettings[v]
+            btn.Text = v.." "..(ESPSettings[v] and "ON" or "OFF")
+        end)
+        y = y + 40
+    end
+end
+createESPUI(espContent)
+
+local function shouldESP(p)
+    if p==LocalPlayer then return false end
+    if not ESPSettings.Teammates and LocalPlayer.Team and p.Team and LocalPlayer.Team==p.Team then return false end
+    return true
+end
+
+local function getColor(p)
+    return Color3.fromRGB(0,0,255)
+end
+
+local function setupESP(p)
+    if ESP[p] then return end
+    local c = p.Character
+    if not c then return end
+
+    local box = Instance.new("SelectionBox")
+    box.LineThickness = 0.05
+    box.SurfaceTransparency = 1
+    box.Adornee = c:FindFirstChild("HumanoidRootPart")
+    box.Parent = workspace
+
+    local hl = Instance.new("Highlight")
+    hl.FillTransparency = 1
+    hl.Adornee = c:FindFirstChild("HumanoidRootPart")
+    hl.Parent = workspace
+
+    local bb = Instance.new("BillboardGui")
+    bb.Size = UDim2.new(0,200,0,40)
+    bb.StudsOffset = Vector3.new(0,3,0)
+    bb.AlwaysOnTop = true
+    bb.Adornee = c:FindFirstChild("HumanoidRootPart")
+    bb.Parent = workspace
+
+    local txt = Instance.new("TextLabel", bb)
+    txt.Size = UDim2.new(1,0,1,0)
+    txt.BackgroundTransparency = 1
+    txt.Font = Enum.Font.Gotham
+    txt.TextSize = 13
+
+    ESP[p] = {Box=box,HL=hl,BB=bb,TXT=txt}
+end
+
+for _,p in pairs(Players:GetPlayers()) do
+    setupESP(p)
+end
+Players.PlayerAdded:Connect(setupESP)
+Players.PlayerRemoving:Connect(function(p)
+    if ESP[p] then
+        for _,v in pairs(ESP[p]) do v:Destroy() end
+        ESP[p]=nil
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    for p,e in pairs(ESP) do
+        local c = p.Character
+        local hrp = c and c:FindFirstChild("HumanoidRootPart")
+        local hum = c and c:FindFirstChildOfClass("Humanoid")
+        local isVisible = hum and hum.Health>0 and hrp and shouldESP(p)
+        if isVisible then
+            local col = getColor(p)
+            e.Box.Color3 = col
+            e.HL.OutlineColor = col
+            e.TXT.TextColor3 = col
+
+            e.Box.Visible = ESPSettings.Box
+            e.HL.Enabled = ESPSettings.Outline
+            local showBB = ESPSettings.Name or ESPSettings.Distance
+            e.BB.Enabled = showBB
+            if showBB then
+                local t = ""
+                if ESPSettings.Name then t=p.Name end
+                if ESPSettings.Distance then
+                    local dist = math.floor((Camera.CFrame.Position-hrp.Position).Magnitude)
+                    if ESPSettings.Name then t=t.." ["..dist.." studs]" else t=dist.." studs" end
+                end
+                e.TXT.Text = t
+            end
+        else
+            e.Box.Visible=false
+            e.HL.Enabled=false
+            e.BB.Enabled=false
+        end
+    end
+end)
+
+--==================== Player Scripts ====================--
 -- Speed
 local speedValue = 50
 local speedEnabled = false
 
--- TextBox para digitar velocidade
 local speedBox = Instance.new("TextBox")
 speedBox.Size = UDim2.new(0.4,0,0,30)
 speedBox.Position = UDim2.new(0.05,0,0,10)
@@ -208,7 +368,6 @@ speedBox.TextSize = 18
 Instance.new("UICorner", speedBox)
 speedBox.Parent = playerContent
 
--- Botão Speed
 local speedBtn = Instance.new("TextButton")
 speedBtn.Size = UDim2.new(0.9,0,0,50)
 speedBtn.Position = UDim2.new(0.05,0,0,50)
@@ -221,7 +380,6 @@ speedBtn.Text = "Speed: OFF"
 Instance.new("UICorner", speedBtn)
 speedBtn.Parent = playerContent
 
--- Atualiza valor
 speedBox.FocusLost:Connect(function()
     local val = tonumber(speedBox.Text)
     if val and val>0 then
@@ -231,21 +389,15 @@ speedBox.FocusLost:Connect(function()
     end
 end)
 
--- Toggle Speed
 speedBtn.MouseButton1Click:Connect(function()
     speedEnabled = not speedEnabled
     speedBtn.Text = speedEnabled and "Speed: ON" or "Speed: OFF"
 end)
 
--- Aplica velocidade
 RunService.RenderStepped:Connect(function()
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
         local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        if speedEnabled then
-            hum.WalkSpeed = speedValue
-        else
-            hum.WalkSpeed = 16
-        end
+        hum.WalkSpeed = speedEnabled and speedValue or 16
     end
 end)
 
@@ -264,47 +416,4 @@ Instance.new("UICorner", infJumpBtn)
 
 infJumpBtn.MouseButton1Click:Connect(function()
     infJumpEnabled = not infJumpEnabled
-    infJumpBtn.Text = infJumpEnabled and "Infinity Jump: ON" or "Infinity Jump: OFF"
-end)
-
-UserInputService.JumpRequest:Connect(function()
-    if infJumpEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
-        LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
-    end
-end)
-
--- Noclip
-local noclipEnabled = false
-local noclipBtn = Instance.new("TextButton", playerContent)
-noclipBtn.Size = UDim2.new(0.9,0,0,50)
-noclipBtn.Position = UDim2.new(0.05,0,0,170)
-noclipBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-noclipBtn.BackgroundTransparency = 0.2
-noclipBtn.TextColor3 = Color3.fromRGB(255,255,255)
-noclipBtn.Font = Enum.Font.GothamBold
-noclipBtn.TextSize = 20
-noclipBtn.Text = "Noclip: OFF"
-Instance.new("UICorner", noclipBtn)
-
-noclipBtn.MouseButton1Click:Connect(function()
-    noclipEnabled = not noclipEnabled
-    noclipBtn.Text = noclipEnabled and "Noclip: ON" or "Noclip: OFF"
-end)
-
-RunService.Stepped:Connect(function()
-    if noclipEnabled and LocalPlayer.Character then
-        for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = false
-            end
-        end
-    elseif LocalPlayer.Character then
-        for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = true
-            end
-        end
-    end
-end)
-
-return screenGui
+    infJumpBtn.Text = infJump
