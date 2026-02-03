@@ -1,4 +1,4 @@
---[[ Universal Hub LMG2L - Completo e funcional (ESP Really Blue + Hitbox) ]]--
+--[[ Universal Hub LMG2L - Completo e funcional (ESP Really Blue) ]]--
 
 local LMG2L = {}
 
@@ -99,110 +99,12 @@ rightFrame.BackgroundColor3 = Color3.fromRGB(84,84,84)
 rightFrame.BorderSizePixel = 0
 Instance.new("UICorner", rightFrame)
 
--- ================== Aba Hitbox ==================
+-- Create content frames
 local hitboxContent = Instance.new("Frame", rightFrame)
 hitboxContent.Size = UDim2.new(1,0,1,0)
 hitboxContent.BackgroundTransparency = 1
 hitboxContent.Visible = true
 
--- ================== Script ofuscado dentro da aba Hitbox ==================
-do
-    local v0=game:GetService("Players")
-    local v1=game:GetService("RunService")
-    local v2=v0.LocalPlayer
-    local v3=game:GetService("TweenService")
-    local v4=Instance.new("ScreenGui")
-    local v5=Instance.new("Frame")
-    local v6=Instance.new("UICorner")
-    local v7=Instance.new("TextBox")
-    local v8=Instance.new("UICorner")
-    local v9=Instance.new("TextButton")
-    local v10=Instance.new("UICorner")
-    local v11=Instance.new("TextButton")
-    local v12=Instance.new("UICorner")
-    local v13=false
-    v4.Parent=hitboxContent -- << apenas alterado para ficar dentro da aba Hitbox
-    v5.Parent=v4
-    v7.Parent=v5
-    v9.Parent=v5
-    v11.Parent=v5
-    v6.Parent=v5
-    v8.Parent=v7
-    v10.Parent=v9
-    v12.Parent=v11
-    -- (restante do script ofuscado exatamente como você enviou)
-    v5.Size=UDim2.new(1637 -(1523 + 114) ,144 + 16 ,0 -0 ,110)
-    v5.Position=UDim2.new(0.5, -80,0.5, -(1120 -(68 + 997)))
-    v5.BackgroundColor3=Color3.fromRGB(1320 -(226 + 1044) ,217 -167 ,167 -(32 + 85) )
-    v5.BorderSizePixel=0 + 0 
-    v5.Active=true
-    v5.Draggable=true
-    v5.ClipsDescendants=true
-    v5.BackgroundTransparency=0.2
-    v5.Visible=true
-    v6.CornerRadius=UDim.new(0,3 + 7 )
-    v11.Size=UDim2.new(1117 -(892 + 65) ,20)
-    v11.Position=UDim2.new(0,0,0,0)
-    v11.Text="▼"
-    v11.BackgroundColor3=Color3.fromRGB(430 -(87 + 263) ,260 -(67 + 113) ,59 + 21 )
-    v11.TextColor3=Color3.fromRGB(255,626 -371 ,188 + 67 )
-    v12.CornerRadius=UDim.new(0,10)
-    v7.Size=UDim2.new(952 -(802 + 150) ,376 -236 ,0 -0 ,19 + 6 )
-    v7.Position=UDim2.new(997 -(915 + 82) ,10,0 -0 ,15 + 10 )
-    v7.Text="10"
-    v7.BackgroundColor3=Color3.fromRGB(92 -22 ,1257 -(1069 + 118) ,70)
-    v7.TextColor3=Color3.fromRGB(578 -323 ,557 -302 ,45 + 210 )
-    v8.CornerRadius=UDim.new(0,10)
-    v9.Size=UDim2.new(791 -(368 + 423) ,439 -299 ,18 -(10 + 8) ,96 -71 )
-    v9.Position=UDim2.new(442 -(416 + 26) ,31 -21 ,0,96 -41 )
-    v9.Text="Enable Hitbox"
-    v9.BackgroundColor3=Color3.fromRGB(528 -(145 + 293) ,520 -(44 + 386) ,90)
-    v9.TextColor3=Color3.fromRGB(255,1741 -(998 + 488) ,82 + 173 )
-    v10.CornerRadius=UDim.new(0,782 -(201 + 571) )
-    _G.HeadSize=tonumber(v7.Text) or (1148 -(116 + 1022))
-    _G.Disabled=true
-    local v52={}
-    local function v53() 
-        v52={}
-        for _,v67 in ipairs(v0:GetPlayers()) do
-            if v67~=v2 and v67.Character and v67.Character:FindFirstChild("HumanoidRootPart") then
-                table.insert(v52,v67)
-            end
-        end
-    end
-    v7.FocusLost:Connect(function()
-        local v56=tonumber(v7.Text)
-        if v56 then _G.HeadSize=v56 else v7.Text=tostring(_G.HeadSize) end
-    end)
-    v9.MouseButton1Click:Connect(function()
-        _G.Disabled = not _G.Disabled
-        v9.Text = (_G.Disabled and "Enable Hitbox") or "Disable Hitbox"
-    end)
-    v11.MouseButton1Click:Connect(function()
-        v13 = not v13
-        v11.Text = (v13 and "▲") or "▼"
-    end)
-    v1.RenderStepped:Connect(function()
-        if not _G.Disabled then
-            for _,v65 in ipairs(v52) do
-                if v65.Character and v65.Character:FindFirstChild("HumanoidRootPart") then
-                    local v70=v65.Character.HumanoidRootPart
-                    v70.Size=Vector3.new(_G.HeadSize,_G.HeadSize,_G.HeadSize)
-                    v70.Transparency=0
-                    v70.BrickColor=BrickColor.new("Really blue")
-                    v70.Material=Enum.Material.Neon
-                    v70.CanCollide=false
-                end
-            end
-        end
-    end)
-    while true do
-        v53()
-        wait(1)
-    end
-end
-
--- ================== Aba ESP ==================
 local espContent = Instance.new("Frame", rightFrame)
 espContent.Size = UDim2.new(1,0,1,0)
 espContent.BackgroundTransparency = 1
@@ -218,7 +120,7 @@ espBtn.MouseButton1Click:Connect(function()
     espContent.Visible = true
 end)
 
--- ================= Minimize/Restore =================
+-- Minimize/Restore
 local openBtn = Instance.new("TextButton", LMG2L["ScreenGui"])
 openBtn.Size = UDim2.new(0,50,0,50)
 openBtn.Position = UDim2.new(0,10,0,10)
