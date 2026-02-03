@@ -1,344 +1,395 @@
-local UserInputService = game:GetService("UserInputService")
+--[[ Universal Hub LMG2L - Completo com Hitbox e ESP funcionando ]]--
+
+local LMG2L = {}
+
+--// Services
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local PlayerService = game:GetService("Players")
-local Workspace = game:GetService("Workspace")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
 
-local Camera = Workspace.CurrentCamera
-local LocalPlayer = PlayerService.LocalPlayer
-local Mouse = LocalPlayer:GetMouse()
+--// ScreenGui
+local function criarScreenGui()
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "UniversalHub"
+    gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    gui.ResetOnSpawn = false
+    gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    return gui
+end
 
-local SilentAim, Aimbot, Trigger = nil, false, false
-local ProjectileSpeed, ProjectileGravity, GravityCorrection = 1000, 196.2, 2
+LMG2L["ScreenGui"] = LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("UniversalHub") or criarScreenGui()
+local screenGui = LMG2L["ScreenGui"]
 
-local KnownBodyParts = {
-    {"Head", true}, {"HumanoidRootPart", true},
-    {"Torso", false}, {"UpperTorso", false}, {"LowerTorso", false},
+--// MainFrame
+local function criarMainFrame()
+    local frame = Instance.new("Frame")
+    frame.Name = "MainFrame"
+    frame.Size = UDim2.new(0.32,0,0.56,0)
+    frame.Position = UDim2.new(0.34,0,0.15,0)
+    frame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+    frame.BorderSizePixel = 0
+    Instance.new("UICorner", frame)
+    frame.Parent = screenGui
+    return frame
+end
 
-    {"Right Arm", false}, {"RightUpperArm", false}, {"RightLowerArm", false}, {"RightHand", false},
-    {"Left Arm", false}, {"LeftUpperArm", false}, {"LeftLowerArm", false}, {"LeftHand", false},
+local main = screenGui:FindFirstChild("MainFrame") or criarMainFrame()
 
-    {"Right Leg", false}, {"RightUpperLeg", false}, {"RightLowerLeg", false}, {"RightFoot", false},
-    {"Left Leg", false}, {"LeftUpperLeg", false}, {"LeftLowerLeg", false}, {"LeftFoot", false}
+--// Header
+local header = main:FindFirstChild("Header") or Instance.new("Frame", main)
+header.Name = "Header"
+header.Size = UDim2.new(1,0,0.15,0)
+header.BackgroundColor3 = Color3.fromRGB(0,0,0)
+header.BorderSizePixel = 0
+Instance.new("UICorner", header)
+
+local headerInner = header:FindFirstChild("HeaderInner") or Instance.new("Frame", header)
+headerInner.Name = "HeaderInner"
+headerInner.Size = UDim2.new(0.96,0,0.77,0)
+headerInner.Position = UDim2.new(0.02,0,0.11,0)
+headerInner.BackgroundColor3 = Color3.fromRGB(84,84,84)
+headerInner.BorderSizePixel = 0
+Instance.new("UICorner", headerInner)
+
+local title = headerInner:FindFirstChild("Title") or Instance.new("TextLabel", headerInner)
+title.Name = "Title"
+title.Size = UDim2.new(0.4,0,1,0)
+title.Position = UDim2.new(0.01,0,0,0)
+title.BackgroundTransparency = 1
+title.Text = "Universal Hub"
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.Font = Enum.Font.DenkOne
+title.TextSize = 30
+title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Minimize Button
+local toggleBtn = header:FindFirstChild("ToggleBtn") or Instance.new("TextButton", header)
+toggleBtn.Name = "ToggleBtn"
+toggleBtn.Size = UDim2.new(0.13,0,0.7,0)
+toggleBtn.Position = UDim2.new(0.83,0,0.14,0)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(255,255,255)
+toggleBtn.BackgroundTransparency = 0.8
+toggleBtn.TextColor3 = Color3.fromRGB(255,255,255)
+toggleBtn.Text = "-"
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextSize = 35
+Instance.new("UICorner", toggleBtn)
+
+-- Left Frame (Tabs)
+local leftFrame = main:FindFirstChild("LeftFrame") or Instance.new("Frame", main)
+leftFrame.Name = "LeftFrame"
+leftFrame.Size = UDim2.new(0.32,0,0.79,0)
+leftFrame.Position = UDim2.new(0.02,0,0.165,0)
+leftFrame.BackgroundColor3 = Color3.fromRGB(84,84,84)
+leftFrame.BorderSizePixel = 0
+Instance.new("UICorner", leftFrame)
+
+-- Tabs buttons
+local hitboxBtn = leftFrame:FindFirstChild("HitboxBtn") or Instance.new("TextButton", leftFrame)
+hitboxBtn.Name = "HitboxBtn"
+hitboxBtn.Size = UDim2.new(0.87,0,0.16,0)
+hitboxBtn.Position = UDim2.new(0.07,0,0.03,0)
+hitboxBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+hitboxBtn.BackgroundTransparency = 0.8
+hitboxBtn.TextColor3 = Color3.fromRGB(255,255,255)
+hitboxBtn.Text = "Hitbox"
+hitboxBtn.Font = Enum.Font.DenkOne
+hitboxBtn.TextSize = 30
+Instance.new("UICorner", hitboxBtn)
+
+local espBtn = leftFrame:FindFirstChild("ESPBtn") or Instance.new("TextButton", leftFrame)
+espBtn.Name = "ESPBtn"
+espBtn.Size = UDim2.new(0.87,0,0.16,0)
+espBtn.Position = UDim2.new(0.07,0,0.22,0)
+espBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+espBtn.BackgroundTransparency = 0.8
+espBtn.TextColor3 = Color3.fromRGB(255,255,255)
+espBtn.Text = "ESP"
+espBtn.Font = Enum.Font.DenkOne
+espBtn.TextSize = 30
+Instance.new("UICorner", espBtn)
+
+-- Right Frame (Tab content)
+local rightFrame = main:FindFirstChild("RightFrame") or Instance.new("Frame", main)
+rightFrame.Name = "RightFrame"
+rightFrame.Size = UDim2.new(0.61,0,0.79,0)
+rightFrame.Position = UDim2.new(0.37,0,0.165,0)
+rightFrame.BackgroundColor3 = Color3.fromRGB(84,84,84)
+rightFrame.BorderSizePixel = 0
+Instance.new("UICorner", rightFrame)
+
+-- Tab content frames
+local hitboxContent = rightFrame:FindFirstChild("HitboxContent") or Instance.new("Frame", rightFrame)
+hitboxContent.Name = "HitboxContent"
+hitboxContent.Size = UDim2.new(1,0,1,0)
+hitboxContent.BackgroundTransparency = 1
+hitboxContent.Visible = true
+
+local espContent = rightFrame:FindFirstChild("ESPContent") or Instance.new("Frame", rightFrame)
+espContent.Name = "ESPContent"
+espContent.Size = UDim2.new(1,0,1,0)
+espContent.BackgroundTransparency = 1
+espContent.Visible = false
+
+-- Button logic to switch tabs
+hitboxBtn.MouseButton1Click:Connect(function()
+    hitboxContent.Visible = true
+    espContent.Visible = false
+end)
+espBtn.MouseButton1Click:Connect(function()
+    hitboxContent.Visible = false
+    espContent.Visible = true
+end)
+
+-- Minimize/Restore Button "+"
+local openBtn
+local function criarOpenBtn()
+    if openBtn and openBtn.Parent then return end
+    openBtn = Instance.new("TextButton", screenGui)
+    openBtn.Name = "OpenBtn"
+    openBtn.Size = UDim2.new(0,50,0,50)
+    openBtn.Position = UDim2.new(0,10,0,10)
+    openBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+    openBtn.TextColor3 = Color3.fromRGB(255,255,255)
+    openBtn.Text = "+"
+    openBtn.Visible = false
+    openBtn.Font = Enum.Font.SourceSansBold
+    openBtn.TextScaled = true
+
+    openBtn.MouseButton1Click:Connect(function()
+        main.Visible = true
+        openBtn.Visible = false
+    end)
+end
+
+criarOpenBtn()
+
+toggleBtn.MouseButton1Click:Connect(function()
+    main.Visible = false
+    openBtn.Visible = true
+end)
+
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(0.1)
+    criarOpenBtn()
+end)
+
+-- ================= Hitbox Original Integrado =================
+local _G_HeadSize = 10
+local _G_Disabled = true
+local playersList = {}
+
+-- TextBox de tamanho
+local sizeBox = Instance.new("TextBox")
+sizeBox.Size = UDim2.new(0.4,0,0,30)
+sizeBox.Position = UDim2.new(0.05,0,0,10)
+sizeBox.Text = tostring(_G_HeadSize)
+sizeBox.BackgroundColor3 = Color3.fromRGB(0,0,0)
+sizeBox.BackgroundTransparency = 0.2
+sizeBox.TextColor3 = Color3.fromRGB(255,255,255)
+sizeBox.Font = Enum.Font.DenkOne
+sizeBox.TextSize = 18
+Instance.new("UICorner", sizeBox)
+sizeBox.Parent = hitboxContent
+
+-- Botão profissional Hitbox
+local hitboxBtn2 = Instance.new("TextButton")
+hitboxBtn2.Size = UDim2.new(0.9,0,0,50)
+hitboxBtn2.Position = UDim2.new(0.05,0,0,60)
+hitboxBtn2.BackgroundColor3 = Color3.fromRGB(0,0,0)
+hitboxBtn2.BackgroundTransparency = 0.2
+hitboxBtn2.TextColor3 = Color3.fromRGB(255,255,255)
+hitboxBtn2.Font = Enum.Font.GothamBold
+hitboxBtn2.TextSize = 20
+hitboxBtn2.Text = "Enable Hitbox"
+Instance.new("UICorner", hitboxBtn2)
+hitboxBtn2.Parent = hitboxContent
+
+-- Hover effect
+local uigrad = Instance.new("UIGradient")
+uigrad.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(84,84,84)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0,0,0))
 }
+uigrad.Rotation = 45
+uigrad.Parent = hitboxBtn2
 
-local Window = Parvus.Utilities.UI:Window({
-    Name = ("Parvus Hub %s %s"):format(utf8.char(8212), Parvus.Game.Name),
-    Position = UDim2.new(0.5, -248 * 3, 0.5, -248)
-}) do
+hitboxBtn2.MouseEnter:Connect(function() hitboxBtn2.BackgroundTransparency = 0 end)
+hitboxBtn2.MouseLeave:Connect(function() hitboxBtn2.BackgroundTransparency = 0.2 end)
 
-    local CombatTab = Window:Tab({Name = "Combat"}) do
-        local PredictionSection = CombatTab:Section({Name = "Prediction", Side = "Left"}) do
-            PredictionSection:Slider({Name = "Velocity", Flag = "Prediction/Velocity", Min = 1, Max = 10000, Value = 1000, Callback = function(Number)
-                ProjectileSpeed = Number
-            end})
-            PredictionSection:Slider({Name = "Gravity", Flag = "Prediction/Gravity", Min = 0, Max = 1000, Precise = 1, Value = 196.2, Callback = function(Number)
-                ProjectileGravity = Number
-            end})
-            PredictionSection:Slider({Name = "Gravity Correction", Flag = "Prediction/Gravity", Min = 1, Max = 5, Value = 2, Callback = function(Number)
-                GravityCorrection = Number
-            end})
-        end
-        local AimbotSection = CombatTab:Section({Name = "Aimbot", Side = "Left"}) do
-            AimbotSection:Toggle({Name = "Enabled", Flag = "Aimbot/Enabled", Value = false})
-            :Keybind({Flag = "Aimbot/Keybind", Value = "MouseButton2", Mouse = true, DisableToggle = true,
-            Callback = function(Key, KeyDown) Aimbot = Window.Flags["Aimbot/Enabled"] and KeyDown end})
-
-            AimbotSection:Toggle({Name = "Always Enabled", Flag = "Aimbot/AlwaysEnabled", Value = false})
-            AimbotSection:Toggle({Name = "Prediction", Flag = "Aimbot/Prediction", Value = false})
-
-            AimbotSection:Toggle({Name = "Team Check", Flag = "Aimbot/TeamCheck", Value = false})
-            AimbotSection:Toggle({Name = "Distance Check", Flag = "Aimbot/DistanceCheck", Value = false})
-            AimbotSection:Toggle({Name = "Visibility Check", Flag = "Aimbot/VisibilityCheck", Value = false})
-            AimbotSection:Slider({Name = "Sensitivity", Flag = "Aimbot/Sensitivity", Min = 0, Max = 100, Value = 20, Unit = "%"})
-            AimbotSection:Slider({Name = "Field Of View", Flag = "Aimbot/FOV/Radius", Min = 0, Max = 500, Value = 100, Unit = "r"})
-            AimbotSection:Slider({Name = "Distance Limit", Flag = "Aimbot/DistanceLimit", Min = 25, Max = 1000, Value = 250, Unit = "studs"})
-
-            local PriorityList, BodyPartsList = {{Name = "Closest", Mode = "Button", Value = true}}, {}
-            for Index, Value in pairs(KnownBodyParts) do
-                PriorityList[#PriorityList + 1] = {Name = Value[1], Mode = "Button", Value = false}
-                BodyPartsList[#BodyPartsList + 1] = {Name = Value[1], Mode = "Toggle", Value = Value[2]}
-            end
-
-            AimbotSection:Dropdown({Name = "Priority", Flag = "Aimbot/Priority", List = PriorityList})
-            AimbotSection:Dropdown({Name = "Body Parts", Flag = "Aimbot/BodyParts", List = BodyPartsList})
-        end
-        local AFOVSection = CombatTab:Section({Name = "Aimbot FOV Circle", Side = "Left"}) do
-            AFOVSection:Toggle({Name = "Enabled", Flag = "Aimbot/FOV/Enabled", Value = true})
-            AFOVSection:Toggle({Name = "Filled", Flag = "Aimbot/FOV/Filled", Value = false})
-            AFOVSection:Colorpicker({Name = "Color", Flag = "Aimbot/FOV/Color", Value = {1, 0.66666662693024, 1, 0.25, false}})
-            AFOVSection:Slider({Name = "NumSides", Flag = "Aimbot/FOV/NumSides", Min = 3, Max = 100, Value = 14})
-            AFOVSection:Slider({Name = "Thickness", Flag = "Aimbot/FOV/Thickness", Min = 1, Max = 10, Value = 2})
-        end
-        local SilentAimSection = CombatTab:Section({Name = "Silent Aim", Side = "Right"}) do
-            SilentAimSection:Dropdown({HideName = true, Flag = "SilentAim/Mode", List = {
-                {Name = "FindPartOnRayWithIgnoreList", Mode = "Toggle"},
-                {Name = "FindPartOnRayWithWhitelist", Mode = "Toggle"},
-                {Name = "WorldToViewportPoint", Mode = "Toggle"},
-                {Name = "WorldToScreenPoint", Mode = "Toggle"},
-                {Name = "ViewportPointToRay", Mode = "Toggle"},
-                {Name = "ScreenPointToRay", Mode = "Toggle"},
-                {Name = "FindPartOnRay", Mode = "Toggle"},
-                {Name = "Raycast", Mode = "Toggle"},
-                {Name = "Target", Mode = "Toggle"},
-                {Name = "Hit", Mode = "Toggle"}
-            }})
-
-            SilentAimSection:Toggle({Name = "Enabled", Flag = "SilentAim/Enabled", Value = false}):Keybind({Mouse = true, Flag = "SilentAim/Keybind"})
-
-            SilentAimSection:Toggle({Name = "Prediction", Flag = "SilentAim/Prediction", Value = false})
-
-            SilentAimSection:Toggle({Name = "Team Check", Flag = "SilentAim/TeamCheck", Value = false})
-            SilentAimSection:Toggle({Name = "Distance Check", Flag = "SilentAim/DistanceCheck", Value = false})
-            SilentAimSection:Toggle({Name = "Visibility Check", Flag = "SilentAim/VisibilityCheck", Value = false})
-            SilentAimSection:Slider({Name = "Hit Chance", Flag = "SilentAim/HitChance", Min = 0, Max = 100, Value = 100, Unit = "%"})
-            SilentAimSection:Slider({Name = "Field Of View", Flag = "SilentAim/FOV/Radius", Min = 0, Max = 500, Value = 100, Unit = "r"})
-            SilentAimSection:Slider({Name = "Distance Limit", Flag = "SilentAim/DistanceLimit", Min = 25, Max = 1000, Value = 250, Unit = "studs"})
-
-            local PriorityList, BodyPartsList = {{Name = "Closest", Mode = "Button", Value = true}, {Name = "Random", Mode = "Button"}}, {}
-            for Index, Value in pairs(KnownBodyParts) do
-                PriorityList[#PriorityList + 1] = {Name = Value[1], Mode = "Button", Value = false}
-                BodyPartsList[#BodyPartsList + 1] = {Name = Value[1], Mode = "Toggle", Value = Value[2]}
-            end
-
-            SilentAimSection:Dropdown({Name = "Priority", Flag = "SilentAim/Priority", List = PriorityList})
-            SilentAimSection:Dropdown({Name = "Body Parts", Flag = "SilentAim/BodyParts", List = BodyPartsList})
-        end
-        local SAFOVSection = CombatTab:Section({Name = "Silent Aim FOV Circle", Side = "Right"}) do
-            SAFOVSection:Toggle({Name = "Enabled", Flag = "SilentAim/FOV/Enabled", Value = true})
-            SAFOVSection:Toggle({Name = "Filled", Flag = "SilentAim/FOV/Filled", Value = false})
-            SAFOVSection:Colorpicker({Name = "Color", Flag = "SilentAim/FOV/Color",
-            Value = {0.6666666865348816, 0.6666666269302368, 1, 0.25, false}})
-            SAFOVSection:Slider({Name = "NumSides", Flag = "SilentAim/FOV/NumSides", Min = 3, Max = 100, Value = 14})
-            SAFOVSection:Slider({Name = "Thickness", Flag = "SilentAim/FOV/Thickness", Min = 1, Max = 10, Value = 2})
-        end
-        local TriggerSection = CombatTab:Section({Name = "Trigger", Side = "Right"}) do
-            TriggerSection:Toggle({Name = "Enabled", Flag = "Trigger/Enabled", Value = false})
-            :Keybind({Flag = "Trigger/Keybind", Value = "MouseButton2", Mouse = true, DisableToggle = true,
-            Callback = function(Key, KeyDown) Trigger = Window.Flags["Trigger/Enabled"] and KeyDown end})
-
-            TriggerSection:Toggle({Name = "Always Enabled", Flag = "Trigger/AlwaysEnabled", Value = false})
-            TriggerSection:Toggle({Name = "Hold Mouse Button", Flag = "Trigger/HoldMouseButton", Value = false})
-            TriggerSection:Toggle({Name = "Prediction", Flag = "Trigger/Prediction", Value = false})
-
-            TriggerSection:Toggle({Name = "Team Check", Flag = "Trigger/TeamCheck", Value = false})
-            TriggerSection:Toggle({Name = "Distance Check", Flag = "Trigger/DistanceCheck", Value = false})
-            TriggerSection:Toggle({Name = "Visibility Check", Flag = "Trigger/VisibilityCheck", Value = false})
-
-            TriggerSection:Slider({Name = "Click Delay", Flag = "Trigger/Delay", Min = 0, Max = 1, Precise = 2, Value = 0.15, Unit = "sec"})
-            TriggerSection:Slider({Name = "Distance Limit", Flag = "Trigger/DistanceLimit", Min = 25, Max = 1000, Value = 250, Unit = "studs"})
-            TriggerSection:Slider({Name = "Field Of View", Flag = "Trigger/FOV/Radius", Min = 0, Max = 500, Value = 25, Unit = "r"})
-
-            local PriorityList, BodyPartsList = {{Name = "Closest", Mode = "Button", Value = true}, {Name = "Random", Mode = "Button"}}, {}
-            for Index, Value in pairs(KnownBodyParts) do
-                PriorityList[#PriorityList + 1] = {Name = Value[1], Mode = "Button", Value = false}
-                BodyPartsList[#BodyPartsList + 1] = {Name = Value[1], Mode = "Toggle", Value = Value[2]}
-            end
-
-            TriggerSection:Dropdown({Name = "Priority", Flag = "Trigger/Priority", List = PriorityList})
-            TriggerSection:Dropdown({Name = "Body Parts", Flag = "Trigger/BodyParts", List = BodyPartsList})
-        end
-        local TFOVSection = CombatTab:Section({Name = "Trigger FOV Circle", Side = "Left"}) do
-            TFOVSection:Toggle({Name = "Enabled", Flag = "Trigger/FOV/Enabled", Value = true})
-            TFOVSection:Toggle({Name = "Filled", Flag = "Trigger/FOV/Filled", Value = false})
-            TFOVSection:Colorpicker({Name = "Color", Flag = "Trigger/FOV/Color", Value = {0.0833333358168602, 0.6666666269302368, 1, 0.25, false}})
-            TFOVSection:Slider({Name = "NumSides", Flag = "Trigger/FOV/NumSides", Min = 3, Max = 100, Value = 14})
-            TFOVSection:Slider({Name = "Thickness", Flag = "Trigger/FOV/Thickness", Min = 1, Max = 10, Value = 2})
-        end
+-- Atualiza tamanho
+sizeBox.FocusLost:Connect(function()
+    local size = tonumber(sizeBox.Text)
+    if size then
+        _G_HeadSize = size
+    else
+        sizeBox.Text = tostring(_G_HeadSize)
     end
-    local VisualsSection = Parvus.Utilities:ESPSection(Window, "Visuals", "ESP/Player", true, true, true, true, true, true) do
-        VisualsSection:Colorpicker({Name = "Ally Color", Flag = "ESP/Player/Ally", Value = {0.3333333432674408, 0.6666666269302368, 1, 0, false}})
-        VisualsSection:Colorpicker({Name = "Enemy Color", Flag = "ESP/Player/Enemy", Value = {1, 0.6666666269302368, 1, 0, false}})
-        VisualsSection:Toggle({Name = "Team Check", Flag = "ESP/Player/TeamCheck", Value = false})
-        VisualsSection:Toggle({Name = "Use Team Color", Flag = "ESP/Player/TeamColor", Value = false})
-        VisualsSection:Toggle({Name = "Distance Check", Flag = "ESP/Player/DistanceCheck", Value = false})
-        VisualsSection:Slider({Name = "Distance", Flag = "ESP/Player/Distance", Min = 25, Max = 1000, Value = 250, Unit = "studs"})
-    end
-    Parvus.Utilities:SettingsSection(Window, "RightShift", false)
-end Parvus.Utilities.InitAutoLoad(Window)
-
-Parvus.Utilities:SetupWatermark(Window)
-Parvus.Utilities:SetupLighting(Window.Flags)
-Parvus.Utilities.Drawing.SetupCursor(Window)
-Parvus.Utilities.Drawing.SetupCrosshair(Window.Flags)
-Parvus.Utilities.Drawing.SetupFOV("Aimbot", Window.Flags)
-Parvus.Utilities.Drawing.SetupFOV("Trigger", Window.Flags)
-Parvus.Utilities.Drawing.SetupFOV("SilentAim", Window.Flags)
-
-local WallCheckParams = RaycastParams.new()
-WallCheckParams.FilterType = Enum.RaycastFilterType.Blacklist
-WallCheckParams.IgnoreWater = true
-
-local function Raycast(Origin, Direction, Filter)
-    WallCheckParams.FilterDescendantsInstances = Filter
-    return Workspace:Raycast(Origin, Direction, WallCheckParams)
-end
-local function InEnemyTeam(Enabled, Player)
-    if not Enabled then return true end
-    return LocalPlayer.Team ~= Player.Team
-end
-local function WithinReach(Enabled, Distance, Limit)
-    if not Enabled then return true end
-    return Distance < Limit
-end
-local function ObjectOccluded(Enabled, Origin, Position, Object)
-    if not Enabled then return false end
-    return Raycast(Origin, Position - Origin, {Object, LocalPlayer.Character})
-end
-local function SolveTrajectory(Origin, Velocity, Time, Gravity)
-    return Origin + Velocity * Time + Gravity * Time * Time / GravityCorrection
-end
-local function GetClosest(Enabled,
-    TeamCheck, VisibilityCheck, DistanceCheck,
-    DistanceLimit, FieldOfView, Priority, BodyParts,
-    PredictionEnabled
-)
-
-    if not Enabled then return end
-    local CameraPosition, Closest = Camera.CFrame.Position, nil
-    for Index, Player in ipairs(PlayerService:GetPlayers()) do
-        if Player == LocalPlayer then continue end
-
-        local Character = Player.Character if not Character then continue end
-        if not InEnemyTeam(TeamCheck, Player) then continue end
-
-        local Humanoid = Character:FindFirstChildOfClass("Humanoid")
-        if not Humanoid then continue end if Humanoid.Health <= 0 then continue end
-
-        if Priority == "Random" then
-            Priority = BodyParts[math.random(#BodyParts)]
-            BodyPart = Character:FindFirstChild(Priority)
-            if not BodyPart then continue end
-
-            local BodyPartPosition = BodyPart.Position
-            local Distance = (BodyPartPosition - CameraPosition).Magnitude
-            BodyPartPosition = PredictionEnabled and SolveTrajectory(BodyPartPosition,
-            BodyPart.AssemblyLinearVelocity, Distance / ProjectileSpeed, ProjectileGravity) or BodyPartPosition
-            local ScreenPosition, OnScreen = Camera:WorldToViewportPoint(BodyPartPosition)
-            ScreenPosition = Vector2.new(ScreenPosition.X, ScreenPosition.Y)
-            if not OnScreen then continue end
-
-            Distance = (BodyPartPosition - CameraPosition).Magnitude
-            if not WithinReach(DistanceCheck, Distance, DistanceLimit) then continue end
-            if ObjectOccluded(VisibilityCheck, CameraPosition, BodyPartPosition, Character) then continue end
-
-            local Magnitude = (ScreenPosition - UserInputService:GetMouseLocation()).Magnitude
-            if Magnitude >= FieldOfView then continue end
-
-            return {Player, Character, BodyPart, ScreenPosition}
-        elseif Priority ~= "Closest" then
-            BodyPart = Character:FindFirstChild(Priority)
-            if not BodyPart then continue end
-
-            local BodyPartPosition = BodyPart.Position
-            local Distance = (BodyPartPosition - CameraPosition).Magnitude
-            BodyPartPosition = PredictionEnabled and SolveTrajectory(BodyPartPosition,
-            BodyPart.AssemblyLinearVelocity, Distance / ProjectileSpeed, ProjectileGravity) or BodyPartPosition
-            local ScreenPosition, OnScreen = Camera:WorldToViewportPoint(BodyPartPosition)
-            ScreenPosition = Vector2.new(ScreenPosition.X, ScreenPosition.Y)
-            if not OnScreen then continue end
-
-            Distance = (BodyPartPosition - CameraPosition).Magnitude
-            if not WithinReach(DistanceCheck, Distance, DistanceLimit) then continue end
-            if ObjectOccluded(VisibilityCheck, CameraPosition, BodyPartPosition, Character) then continue end
-
-            local Magnitude = (ScreenPosition - UserInputService:GetMouseLocation()).Magnitude
-            if Magnitude >= FieldOfView then continue end
-
-            return {Player, Character, BodyPart, ScreenPosition}
-        end
-
-        for Index, BodyPart in ipairs(BodyParts) do
-            BodyPart = Character:FindFirstChild(BodyPart)
-            if not BodyPart then continue end
-
-            local BodyPartPosition = BodyPart.Position
-            local Distance = (BodyPartPosition - CameraPosition).Magnitude
-            BodyPartPosition = PredictionEnabled and SolveTrajectory(BodyPartPosition,
-            BodyPart.AssemblyLinearVelocity, Distance / ProjectileSpeed, ProjectileGravity) or BodyPartPosition
-            local ScreenPosition, OnScreen = Camera:WorldToViewportPoint(BodyPartPosition)
-            ScreenPosition = Vector2.new(ScreenPosition.X, ScreenPosition.Y)
-            if not OnScreen then continue end
-
-            Distance = (BodyPartPosition - CameraPosition).Magnitude
-            if not WithinReach(DistanceCheck, Distance, DistanceLimit) then continue end
-            if ObjectOccluded(VisibilityCheck, CameraPosition, BodyPartPosition, Character) then continue end
-
-            local Magnitude = (ScreenPosition - UserInputService:GetMouseLocation()).Magnitude
-            if Magnitude >= FieldOfView then continue end
-
-            FieldOfView, Closest = Magnitude, {Player, Character, BodyPart, ScreenPosition}
-        end
-    end
-
-    return Closest
-end
-local function AimAt(Hitbox, Sensitivity)
-    if not Hitbox then return end
-    local MouseLocation = UserInputService:GetMouseLocation()
-
-    mousemoverel(
-        (Hitbox[4].X - MouseLocation.X) * Sensitivity,
-        (Hitbox[4].Y - MouseLocation.Y) * Sensitivity
-    )
-end
-
-local OldIndex = nil
-OldIndex = hookmetamethod(game, "__index", function(Self, Index)
-    if checkcaller() then return OldIndex(Self, Index) end
-
-    if SilentAim and math.random(100) <= Window.Flags["SilentAim/HitChance"] then
-        local Mode = Window.Flags["SilentAim/Mode"]
-        if Self == Mouse then
-            if Index == "Target" and table.find(Mode, Index) then
-                return SilentAim[3]
-            elseif Index== "Hit" and table.find(Mode, Index) then
-                return SilentAim[3].CFrame
-            end
-        end
-    end
-
-    return OldIndex(Self, Index)
 end)
 
-local OldNamecall = nil
-OldNamecall = hookmetamethod(game, "__namecall", function(Self, ...)
-    if checkcaller() then return OldNamecall(Self, ...) end
+-- Toggle Hitbox
+hitboxBtn2.MouseButton1Click:Connect(function()
+    _G_Disabled = not _G_Disabled
+    hitboxBtn2.Text = _G_Disabled and "Enable Hitbox" or "Disable Hitbox"
+end)
 
-    if SilentAim and math.random(100) <= Window.Flags["SilentAim/HitChance"] then
-        local Args, Method, Mode = {...}, getnamecallmethod(), Window.Flags["SilentAim/Mode"]
+-- Função reset hitbox
+local function resetHitbox(plr)
+    if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+        local part = plr.Character.HumanoidRootPart
+        part.Size = Vector3.new(2,2,1)
+        part.Transparency = 0
+        part.BrickColor = BrickColor.new("Medium stone grey")
+        part.Material = Enum.Material.Plastic
+        part.CanCollide = true
+    end
+end
 
-        if Self == Workspace then
-            if Method == "Raycast" and table.find(Mode, Method) then
-                Args[2] = SilentAim[3].Position - Args[1]
-                return OldNamecall(Self, unpack(Args))
-            elseif (Method == "FindPartOnRayWithIgnoreList" and table.find(Mode, Method))
-            or (Method == "FindPartOnRayWithWhitelist" and table.find(Mode, Method))
-            or (Method == "FindPartOnRay" and table.find(Mode, Method)) then
-                Args[1] = Ray.new(Args[1].Origin, SilentAim[3].Position - Args[1].Origin)
-                return OldNamecall(Self, unpack(Args))
-            end
-        elseif Self == Camera then
-            if (Method == "ScreenPointToRay" and table.find(Mode, Method))
-            or (Method == "ViewportPointToRay" and table.find(Mode, Method)) then
-                return Ray.new(SilentAim[3].Position, SilentAim[3].Position - Camera.CFrame.Position)
-            elseif (Method == "WorldToScreenPoint" and table.find(Mode, Method))
-            or (Method == "WorldToViewportPoint" and table.find(Mode, Method)) then
-                Args[1] = SilentAim[3].Position return OldNamecall(Self, unpack(Args))
-            end
+-- Aplica hitbox
+RunService.RenderStepped:Connect(function()
+    playersList = {}
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            table.insert(playersList, plr)
         end
     end
 
-    return OldNamecall(Self, ...)
+    for _, plr in ipairs(playersList) do
+        local part = plr.Character.HumanoidRootPart
+        if not _G_Disabled then
+            part.Size = Vector3.new(_G_HeadSize,_G_HeadSize,_G_HeadSize)
+            part.Transparency = 0.8
+            part.BrickColor = BrickColor.new("Really blue")
+            part.Material = Enum.Material.Neon
+            part.CanCollide = false
+        else
+            resetHitbox(plr)
+        end
+    end
 end)
 
-Parvus.Utilities.NewThreadLoop(0, function()
-    if not (Aimbot or Window.Flags["Aimbot/AlwaysEnabled"]) then return end
+-- ================= ESP =================
+local ESPSettings = {Box=false,Outline=false,Name=false,Distance=false,Teammates=false}
+local ESPElements = {}
+local ESP = {}
 
-    AimAt(GetClosest(
-        Window.Flags["Aimbot/Enabled"],
-        Window.Flags["Aimbot/TeamCheck"],
-        Window.Flags["Aimbot/VisibilityCheck"],
-        Window.Flags["Aimbot/DistanceCheck"],
-        Window.Flags["Aimbot/DistanceLimit"],
-        Window.Flags["Aimbot/FOV/Radius"],
-        Window.Flags
+-- Function to create toggles in ESP tab
+local function createESPUI(parent)
+    local y = 10
+    for k,v in pairs({"Box","Outline","Name","Distance","Teammates"}) do
+        local btn = Instance.new("TextButton", parent)
+        btn.Size = UDim2.new(0.95,0,0,30)
+        btn.Position = UDim2.new(0.025,0,0, y)
+        btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+        btn.BackgroundTransparency = 0.5
+        btn.TextColor3 = Color3.fromRGB(255,255,255)
+        btn.Font = Enum.Font.DenkOne
+        btn.TextSize = 14
+        btn.Text = v.." OFF"
+        Instance.new("UICorner", btn)
+        btn.MouseButton1Click:Connect(function()
+            ESPSettings[v] = not ESPSettings[v]
+            btn.Text = v.." "..(ESPSettings[v] and "ON" or "OFF")
+        end)
+        table.insert(ESPElements, btn)
+        y = y + 40
+    end
+end
+
+createESPUI(espContent)
+
+-- Function to determine if player should have ESP
+local function shouldESP(p)
+    if p==LocalPlayer then return false end
+    if not ESPSettings.Teammates then
+        if LocalPlayer.Team and p.Team and LocalPlayer.Team==p.Team then return false end
+    end
+    return true
+end
+
+local function getColor(p)
+    return Color3.fromRGB(0,0,255) -- Really Blue
+end
+
+local function setupESP(p)
+    if ESP[p] then return end
+
+    local box = Instance.new("SelectionBox")
+    box.LineThickness = 0.05
+    box.SurfaceTransparency = 1
+    box.Adornee = nil
+    box.Parent = workspace
+
+    local hl = Instance.new("Highlight")
+    hl.FillTransparency = 1
+    hl.Adornee = nil
+    hl.Parent = workspace
+
+    local bb = Instance.new("BillboardGui")
+    bb.Size = UDim2.new(0,200,0,40)
+    bb.StudsOffset = Vector3.new(0,3,0)
+    bb.AlwaysOnTop = true
+    bb.Adornee = nil
+    bb.Parent = workspace
+
+    local txt = Instance.new("TextLabel", bb)
+    txt.Size = UDim2.new(1,0,1,0)
+    txt.BackgroundTransparency = 1
+    txt.Font = Enum.Font.Gotham
+    txt.TextSize = 13
+
+    ESP[p] = {Box=box,HL=hl,BB=bb,TXT=txt}
+end
+
+for _,p in pairs(Players:GetPlayers()) do
+    if p~=LocalPlayer then setupESP(p) end
+end
+Players.PlayerAdded:Connect(setupESP)
+Players.PlayerRemoving:Connect(function(p)
+    if ESP[p] then for _,v in pairs(ESP[p]) do v:Destroy() end ESP[p]=nil end
+end)
+
+RunService.RenderStepped:Connect(function()
+    for p,e in pairs(ESP) do
+        local c = p.Character
+        local hrp = c and c:FindFirstChild("HumanoidRootPart")
+        local hum = c and c:FindFirstChildOfClass("Humanoid")
+        local isVisible = hum and hum.Health>0 and hrp and shouldESP(p)
+        if isVisible then
+            local col = getColor(p)
+            e.Box.Color3 = col
+            e.HL.OutlineColor = col
+            e.TXT.TextColor3 = col
+
+            e.Box.Visible = ESPSettings.Box
+            e.Box.Adornee = ESPSettings.Box and c or nil
+
+            e.HL.Enabled = ESPSettings.Outline
+            e.HL.Adornee = ESPSettings.Outline and c or nil
+
+            local showBB = ESPSettings.Name or ESPSettings.Distance
+            e.BB.Enabled = showBB
+            e.BB.Adornee = showBB and hrp or nil
+
+            if showBB then
+                local t = ""
+                if ESPSettings.Name then t=p.Name end
+                if ESPSettings.Distance then
+                    local dist = math.floor((Camera.CFrame.Position-hrp.Position).Magnitude)
+                    if ESPSettings.Name then t=t.." ["..dist.." studs]" else t=dist.." studs" end
+                end
+                e.TXT.Text = t
+            end
+        else
+            e.Box.Visible=false
+            e.Box.Adornee=nil
+            e.HL.Enabled=false
+            e.HL.Adornee=nil
+            e.BB.Enabled=false
+            e.BB.Adornee=nil
+        end
+    end
+end)
+
+return screenGui
